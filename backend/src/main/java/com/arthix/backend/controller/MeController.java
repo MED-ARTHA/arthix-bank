@@ -16,11 +16,11 @@ public class MeController {
         this.users = users;
     }
 
-    public record MeResponse(String fullName, String email, BigDecimal balance) {}
+    public record MeResponse(String fullName, String email, BigDecimal balance, String accountNumber) {}
 
     @GetMapping("/me")
     public MeResponse me(Authentication auth) {
         var u = users.findByEmail(auth.getName()).orElseThrow();
-        return new MeResponse(u.getFullName(), u.getEmail(), u.getBalance());
+        return new MeResponse(u.getFullName(), u.getEmail(), u.getBalance(), u.getAccountNumber());
     }
 }

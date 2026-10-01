@@ -1,22 +1,48 @@
 import type { Transaction } from "@/lib/api";
+import { TYPE_META } from "@/lib/analytics";
+import Icon from "@/components/Icon";
+import { dateTime, delay, isIncoming, money } from "@/lib/format";
 
-export default function TransactionList({ items }: { items: Transaction[] }) {
+export default function TransactionList({
+  items,
+  onSelect,
+}: {
+  items: Transaction[];
+  onSelect?: (t: Transaction) => void;
+}) {
   if (items.length === 0) {
-    return <p className="text-sm text-gray-500">No transactions yet.</p>;
+    return <div className="card p-8 text-center text-sm text-[var(--muted)]">No transactions yet.</div>;
   }
   return (
-    <ul className="divide-y rounded-2xl bg-white shadow">
-      {items.map((t) => (
-        <li key={t.id} className="flex items-center justify-between p-4">
-          <div>
-            <p className="font-medium">{t.label}</p>
-            <p className="text-xs text-gray-500">
-              {t.reference} · {new Date(t.createdAt).toLocaleString()}
-            </p>
-          </div>
-          <p className="font-semibold text-red-600">-{t.amount.toFixed(2)} MAD</p>
-        </li>
-      ))}
+    <ul className="card divide-y divide-[var(--line)] overflow-hidden">
+      {items.map((t, i) => {
+        const incoming = isIncoming(t.type);
+        const meta = TYPE_META[t.type] ?? TYPE_META.PAYMENT;
+        return (
+          <li key={t.id} className="rise" style={delay(Math.min(i, 8))}>
+            <button
+              onClick={() => onSelect?.(t)}
+              className="flex w-full items-center gap-4 px-5 py-4 text-left transition hover:bg-[var(--surface-hover)]"
+            >
+              <span
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
+                style={{ background: meta.color + "22", color: meta.color }}
+              >
+                <Icon name={meta.icon} size={17} />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium">{t.label}</p>
+                <p className="mt-0.5 truncate text-xs text-[var(--muted)]">
+                  {t.reference} &middot; {dateTime(t.createdAt)}
+                </p>
+              </div>
+              <p className={`shrink-0 text-sm font-medium ${incoming ? "text-[var(--ok)]" : ""}`}>
+                {incoming ? "+" : "-"}{money(t.amount)}
+              </p>
+            </button>
+          </li>
+        );
+      })}
     </ul>
   );
 }

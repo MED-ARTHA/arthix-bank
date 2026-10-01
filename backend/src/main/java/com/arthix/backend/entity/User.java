@@ -36,4 +36,22 @@ public class User {
     public BigDecimal getBalance() { return balance; }
     public void setBalance(BigDecimal balance) { this.balance = balance; }
     public Instant getCreatedAt() { return createdAt; }
-}
+
+    @Column(unique = true, length = 20)
+    private String accountNumber;
+
+    public String getAccountNumber() { return accountNumber; }
+
+    @PrePersist
+    void generateAccountNumber() {
+        if (accountNumber == null) {
+            long n = java.util.concurrent.ThreadLocalRandom.current()
+                    .nextLong(1_000_000_000_000L, 9_999_999_999_999L);
+            accountNumber = "ARX" + n;
+        }
+    }
+    @Column(length = 20)
+    private String phone;
+
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }}

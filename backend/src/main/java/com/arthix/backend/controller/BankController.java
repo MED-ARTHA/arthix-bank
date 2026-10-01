@@ -39,4 +39,15 @@ public class BankController {
     public TransactionDto pay(Authentication auth, @Valid @RequestBody PaymentRequest req) {
         return bank.pay(auth.getName(), req);
     }
+
+    @GetMapping("/accounts/lookup")
+    public RecipientDto lookup(Authentication auth, @RequestParam String account) {
+        return bank.lookup(auth.getName(), account);
+    }
+
+    @PostMapping("/transfers")
+    @ResponseStatus(HttpStatus.CREATED)
+    public TransactionDto transfer(Authentication auth, @Valid @RequestBody TransferRequest req) {
+        return bank.transfer(auth.getName(), req);
+    }
 }

@@ -16,4 +16,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select u from User u where u.email = :email")
     Optional<User> findByEmailForUpdate(@Param("email") String email);
-}
+
+    java.util.Optional<User> findByAccountNumber(String accountNumber);
+
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    java.util.Optional<User> findWithLockByAccountNumber(String accountNumber);
+
+    @org.springframework.data.jpa.repository.Query("select u.accountNumber from User u where u.email = :email")
+    java.util.Optional<String> findAccountNumberByEmail(@org.springframework.data.repository.query.Param("email") String email);}
