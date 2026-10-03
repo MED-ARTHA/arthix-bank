@@ -30,7 +30,7 @@ const account: Item[] = [{ href: "/profile", label: "Profile & security", icon: 
 
 export function Brand({ size = 40 }: { size?: number }) {
   // eslint-disable-next-line @next/next/no-img-element
-  return <Logo height={size} />;
+  return (<div style={{ display: "flex", justifyContent: "center", width: "100%", margin: "-6px 0 -10px" }}><Logo height={size} /></div>);
 }
 
 function NavItem({
@@ -90,7 +90,7 @@ function Shell({ children }: { children: React.ReactNode }) {
         }`}
       >
         <Link href="/dashboard" onClick={close} className="px-6 pb-6 pt-7">
-          <Brand size={64} />
+          <Brand size={54} />
         </Link>
 
         <nav className="flex-1 space-y-0.5 overflow-y-auto px-3">
@@ -123,7 +123,7 @@ function Shell({ children }: { children: React.ReactNode }) {
 
       <div className="lg:pl-64">
         <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-[var(--line)] bg-[rgba(3,3,10,0.85)] px-4 backdrop-blur-md lg:hidden">
-          <Brand size={64} />
+          <Brand size={54} />
           <button onClick={() => setOpen(true)} className="relative text-[var(--muted)] hover:text-white" aria-label="Menu">
             <Menu size={22} strokeWidth={1.5} />
             {unread > 0 && <span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full bg-[var(--accent)]" />}

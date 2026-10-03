@@ -7,7 +7,15 @@ export default function Logo({ height = 64, className = "" }: { height?: number;
       src="/logo-trim.png"
       alt="Arthix"
       className={className}
-      style={{ height, width: "auto", display: "block" }}
+      style={{
+        height,
+        width: "auto",
+        maxWidth: "none",
+        objectFit: "contain",
+        display: "block",
+        alignSelf: "flex-start",
+        flexShrink: 0,
+      }}
       onError={(e) => {
         const el = e.currentTarget;
         if (!el.src.endsWith("/logo-mark.png")) el.src = "/logo-mark.png";
