@@ -87,6 +87,11 @@ export async function request<T>(path: string, options: RequestInit = {}): Promi
 
   const res = await fetch(`${API}${path}`, { ...options, headers });
 
+  if (res.status === 401 && typeof window !== "undefined" && !path.startsWith("/api/auth/")) {
+    localStorage.removeItem("token");
+    window.location.replace("/login");
+  }
+
   if (!res.ok) {
     let message = `Request failed (${res.status})`;
     try {

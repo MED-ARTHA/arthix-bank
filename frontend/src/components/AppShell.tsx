@@ -1,5 +1,7 @@
 "use client";
 
+import AuthGuard from "@/components/AuthGuard";
+
 import Logo from "@/components/Logo";
 
 import { useCallback, useEffect, useState } from "react";
@@ -135,7 +137,7 @@ function Shell({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function AppShell({ children }: { children: React.ReactNode }) {
+function AppShellInner({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [ready, setReady] = useState(false);
 
@@ -149,5 +151,13 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     <ChatProvider>
       <Shell>{children}</Shell>
     </ChatProvider>
+  );
+}
+
+export default function AppShell(props: React.ComponentProps<typeof AppShellInner>) {
+  return (
+    <AuthGuard>
+      <AppShellInner {...props} />
+    </AuthGuard>
   );
 }
