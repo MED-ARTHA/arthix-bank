@@ -3,7 +3,7 @@
 import { useEffect, useId, useState } from "react";
 import { delay, money } from "@/lib/format";
 
-export function Sparkline({ values, color = "#8b7cf6" }: { values: number[]; color?: string }) {
+export function Sparkline({ values, color = "#7c6df0" }: { values: number[]; color?: string }) {
   const rawId = useId();
   const id = "sp" + rawId.replace(/[^a-zA-Z0-9]/g, "");
   const w = 300;
@@ -13,31 +13,18 @@ export function Sparkline({ values, color = "#8b7cf6" }: { values: number[]; col
   const min = Math.min(...pts);
   const max = Math.max(...pts);
   const span = max - min || 1;
-  const xy = pts.map((v, i) => [
-    (i / (pts.length - 1)) * w,
-    h - pad - ((v - min) / span) * (h - pad * 2),
-  ]);
+  const xy = pts.map((v, i) => [(i / (pts.length - 1)) * w, h - pad - ((v - min) / span) * (h - pad * 2)]);
   const line = xy.map(([x, y], i) => `${i ? "L" : "M"}${x.toFixed(1)} ${y.toFixed(1)}`).join(" ");
-  const area = `${line} L${w} ${h} L0 ${h} Z`;
   return (
     <svg viewBox={`0 0 ${w} ${h}`} className="h-auto w-full overflow-visible">
       <defs>
         <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.35" />
+          <stop offset="0%" stopColor={color} stopOpacity="0.25" />
           <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
       </defs>
-      <path d={area} fill={`url(#${id})`} className="fade-in" />
-      <path
-        d={line}
-        fill="none"
-        stroke={color}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        pathLength={1}
-        className="draw-line"
-      />
+      <path d={`${line} L${w} ${h} L0 ${h} Z`} fill={`url(#${id})`} className="fade-in" />
+      <path d={line} fill="none" stroke={color} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" pathLength={1} className="draw-line" />
     </svg>
   );
 }
@@ -56,7 +43,7 @@ export function Bars({
         <div key={d.label + i} className="flex h-full flex-1 flex-col items-center justify-end gap-2">
           <div className="flex w-full flex-1 items-end">
             <div
-              className="bar w-full rounded-t-md"
+              className="bar w-full rounded-t-sm"
               style={{ height: `${Math.max((d.value / max) * 100, d.value > 0 ? 4 : 1.5)}%`, ...delay(i) }}
               title={format(d.value)}
             />
@@ -84,7 +71,7 @@ export function Donut({
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }}>
       <svg viewBox="0 0 100 100" className="h-full w-full -rotate-90">
-        <circle cx="50" cy="50" r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="10" />
+        <circle cx="50" cy="50" r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="8" />
         {total > 0 &&
           segments.map((s, i) => {
             const len = (s.value / total) * C;
@@ -97,7 +84,7 @@ export function Donut({
                 r={r}
                 fill="none"
                 stroke={s.color}
-                strokeWidth="10"
+                strokeWidth="8"
                 strokeDasharray={`${Math.max(len - 1.5, 0)} ${C}`}
                 strokeDashoffset={-acc}
                 style={delay(i)}
@@ -115,8 +102,8 @@ export function Donut({
 export function Ring({
   value,
   size = 96,
-  stroke = 8,
-  color = "#8b7cf6",
+  stroke = 6,
+  color = "#7c6df0",
   children,
 }: {
   value: number;

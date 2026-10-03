@@ -27,6 +27,12 @@ public class User {
     private Instant createdAt = Instant.now();
 
     public Long getId() { return id; }
+
+    @Column(name = "avatar_url", length = 300)
+    private String avatarUrl;
+
+    public String getAvatarUrl() { return avatarUrl; }
+    public void setAvatarUrl(String avatarUrl) { this.avatarUrl = avatarUrl; }
     public String getFullName() { return fullName; }
     public void setFullName(String fullName) { this.fullName = fullName; }
     public String getEmail() { return email; }

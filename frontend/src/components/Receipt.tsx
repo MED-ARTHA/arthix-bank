@@ -4,13 +4,13 @@ import { useEffect } from "react";
 import type { Transaction } from "@/lib/api";
 import { dateTime, isIncoming, money } from "@/lib/format";
 
-const META: Record<string, { title: string; kind: string }> = {
-  PAYMENT: { title: "Payment confirmed", kind: "Bill / school payment" },
-  TRANSFER_OUT: { title: "Transfer sent", kind: "Account transfer" },
-  TRANSFER_IN: { title: "Transfer received", kind: "Account transfer" },
-  DEPOSIT: { title: "Deposit completed", kind: "Account top-up" },
-  SAVINGS_OUT: { title: "Moved to savings", kind: "Savings goal" },
-  SAVINGS_IN: { title: "Moved from savings", kind: "Savings goal" },
+const TITLE: Record<string, string> = {
+  PAYMENT: "Payment receipt",
+  TRANSFER_OUT: "Transfer receipt",
+  TRANSFER_IN: "Transfer received",
+  DEPOSIT: "Deposit receipt",
+  SAVINGS_OUT: "Savings transfer",
+  SAVINGS_IN: "Savings withdrawal",
 };
 
 export default function Receipt({ tx, onClose }: { tx: Transaction; onClose: () => void }) {
@@ -22,12 +22,10 @@ export default function Receipt({ tx, onClose }: { tx: Transaction; onClose: () 
 
   const incoming = isIncoming(tx.type);
   const isTransfer = tx.type.startsWith("TRANSFER");
-  const meta = META[tx.type] ?? META.PAYMENT;
 
   const rows: { k: string; v: string; sub?: string }[] = [
     { k: "Receipt no.", v: tx.receiptNo },
     { k: "Date", v: dateTime(tx.createdAt) },
-    { k: "Type", v: meta.kind },
     { k: "From", v: tx.senderName, sub: tx.senderAccount ?? undefined },
     { k: "To", v: tx.beneficiaryName, sub: tx.beneficiaryAccount ?? undefined },
     { k: isTransfer ? "Note" : "Reference", v: isTransfer ? tx.note ?? "-" : tx.reference },
@@ -35,46 +33,42 @@ export default function Receipt({ tx, onClose }: { tx: Transaction; onClose: () 
   ];
 
   return (
-    <div
-      className="overlay fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
-      onClick={onClose}
-    >
+    <div className="overlay fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" onClick={onClose}>
       <div
         id="receipt"
-        className="pop card w-full max-w-md p-7"
-        style={{ background: "#0b0b14" }}
+        className="pop card w-full max-w-md p-8"
+        style={{ background: "#0b0c16" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex flex-col items-center text-center">
-          <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
-            <circle className="check-circle" cx="26" cy="26" r="24" stroke="var(--ok)" strokeWidth="1.5" />
-            <path className="check-mark" d="M16 27l7 7 14-15" stroke="var(--ok)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          <p className="label mt-4">{meta.title}</p>
-          <p className="mt-2 text-4xl font-semibold tracking-tight">
-            {incoming ? "+" : ""}{money(tx.amount)}
-          </p>
+        <div className="flex items-start justify-between">
+          <span className="serif text-xl tracking-[0.2em]">ARTHIX</span>
+          <span className="label">{TITLE[tx.type] ?? "Receipt"}</span>
         </div>
 
-        <dl className="mt-7 divide-y divide-[var(--line)] text-sm">
+        <p className="serif mt-10 text-5xl tracking-tight">
+          {incoming ? "+" : ""}{money(tx.amount)}
+        </p>
+        <p className="mt-3 flex items-center gap-2 text-xs text-[var(--ok)]">
+          <span className="h-1.5 w-1.5 rounded-full bg-[var(--ok)]" /> Completed
+        </p>
+
+        <dl className="mt-8 divide-y divide-[var(--line)] border-t border-[var(--line)] text-sm">
           {rows.map((r) => (
             <div key={r.k} className="flex items-start justify-between gap-6 py-3">
               <dt className="muted text-[var(--muted)]">{r.k}</dt>
-              <dd className="text-right font-medium">
+              <dd className="text-right">
                 {r.v}
-                {r.sub && (
-                  <span className="muted block text-xs font-normal tracking-wide text-[var(--muted)]">{r.sub}</span>
-                )}
+                {r.sub && <span className="muted block text-xs tracking-wide text-[var(--muted)]">{r.sub}</span>}
               </dd>
             </div>
           ))}
         </dl>
 
-        <p className="muted mt-5 text-center text-xs text-[var(--muted)]">
-          Arthix Banque &middot; demo transaction, no real funds moved
+        <p className="muted mt-6 text-xs leading-relaxed text-[var(--muted)]">
+          Arthix Banque. Demo transaction, no real funds were moved.
         </p>
 
-        <div className="no-print mt-6 flex gap-3">
+        <div className="no-print mt-7 flex gap-3">
           <button onClick={() => window.print()} className="btn btn-primary flex-1">
             Print / Save as PDF
           </button>

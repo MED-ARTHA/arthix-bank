@@ -1,42 +1,17 @@
-const API = process.env.NEXT_PUBLIC_API_URL;
+const API =
+  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ||
+  "http://localhost:8081";
 
-export type AuthResponse = { token: string; fullName: string; email: string };
-export type Me = { fullName: string; email: string; balance: number; accountNumber: string | null };
-export type TxType = "PAYMENT" | "TRANSFER_OUT" | "TRANSFER_IN" | "DEPOSIT" | "SAVINGS_OUT" | "SAVINGS_IN";
-export type Transaction = {
-  id: number;
-  type: TxType;
-  category: string;
-  label: string;
-  reference: string;
-  amount: number;
-  balanceAfter: number;
-  createdAt: string;
-  receiptNo: string;
-  senderName: string;
-  senderAccount: string | null;
-  beneficiaryName: string;
-  beneficiaryAccount: string | null;
-  note: string | null;
+// ---------- types (mirror the backend DTOs) ----------
+
+export type Me = {
+  fullName: string;
+  email: string;
+  balance: number;
+  accountNumber: string | null;
+  avatarUrl?: string | null;
 };
-export type Provider = { id: string; name: string; category: string };
-export type Offer = { title: string; description: string };
-export type Recipient = { fullName: string; accountNumber: string };
-export type Voucher = {
-  code: string;
-  amount: number;
-  status: "PENDING" | "PAID" | "EXPIRED";
-  createdAt: string;
-  expiresAt: string;
-};
-export type Goal = {
-  id: number;
-  name: string;
-  targetAmount: number;
-  savedAmount: number;
-  deadline: string | null;
-  createdAt: string;
-};
+
 export type Profile = {
   fullName: string;
   email: string;
@@ -45,76 +20,138 @@ export type Profile = {
   createdAt: string;
 };
 
-async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+export type Transaction = {
+  id: number;
+  type: string;
+  category: string;
+  label: string;
+  reference: string | null;
+  amount: number;
+  balanceAfter: number;
+  createdAt: string;
+  receiptNo: string;
+  senderName: string | null;
+  senderAccount: string | null;
+  beneficiaryName: string | null;
+  beneficiaryAccount: string | null;
+  note: string | null;
+};
 
-  const res = await fetch(`${API}${path}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...options.headers,
-    },
-  });
+export type Provider = { id: string; name: string; category: string };
+export type Offer = { title: string; description: string };
+export type Recipient = { fullName: string; accountNumber: string };
 
-  if (res.status === 401 && token) {
-    localStorage.removeItem("token");
-    window.location.href = "/login";
-    throw new Error("Session expired");
-  }
+export type Goal = {
+  id: number;
+  name: string;
+  targetAmount: number;
+  savedAmount: number;
+  deadline: string | null;
+  createdAt: string;
+};
 
-  if (!res.ok) {
-    const text = await res.text();
-    let message = text;
-    try {
-      const data = JSON.parse(text);
-      message = data.message || data.error || text;
-    } catch {}
-    throw new Error(message || `Request failed (${res.status})`);
-  }
+export type Voucher = {
+  code: string;
+  amount: number;
+  status: string;
+  createdAt: string;
+  expiresAt: string;
+};
 
-  if (typeof window !== "undefined" && options.method && options.method !== "GET") {
-    window.dispatchEvent(new Event("balance-changed"));
-  }
-  if (res.status === 204) return undefined as T;
-  return res.json();
+export type Scheduled = {
+  id: number;
+  toAccount: string;
+  amount: number;
+  note: string | null;
+  frequency: "ONCE" | "WEEKLY" | "MONTHLY";
+  nextRun: string;
+  status: "ACTIVE" | "DONE" | "FAILED";
+  lastError: string | null;
+};
+
+export type AuthResponse = { token: string; fullName?: string; email?: string };
+
+// ---------- request helper ----------
+
+function getToken(): string | null {
+  return typeof window === "undefined" ? null : localStorage.getItem("token");
 }
 
-const post = <T,>(path: string, body?: unknown) =>
-  request<T>(path, { method: "POST", body: body === undefined ? undefined : JSON.stringify(body) });
+export async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const headers = new Headers(options.headers);
+  if (!(options.body instanceof FormData) && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
+  const token = getToken();
+  if (token) headers.set("Authorization", `Bearer ${token}`);
+
+  const res = await fetch(`${API}${path}`, { ...options, headers });
+
+  if (!res.ok) {
+    let message = `Request failed (${res.status})`;
+    try {
+      const data = await res.json();
+      if (typeof data?.message === "string" && data.message) message = data.message;
+      else if (Array.isArray(data?.errors) && data.errors[0]?.defaultMessage) message = data.errors[0].defaultMessage;
+      else if (typeof data?.error === "string") message = data.error;
+    } catch {}
+    throw new Error(message);
+  }
+  if (res.status === 204) return undefined as T;
+  const text = await res.text();
+  return (text ? JSON.parse(text) : undefined) as T;
+}
+
+const json = (method: string, body?: unknown): RequestInit => ({
+  method,
+  body: body === undefined ? undefined : JSON.stringify(body),
+});
+
+// ---------- API ----------
 
 export const api = {
-  signup: (body: { fullName: string; email: string; password: string }) =>
-    post<AuthResponse>("/api/auth/signup", body),
-  login: (body: { email: string; password: string }) => post<AuthResponse>("/api/auth/login", body),
+  // auth
+  login: (d: { email: string; password: string }) => request<AuthResponse>("/api/auth/login", json("POST", d)),
+  signup: (d: { fullName: string; email: string; password: string }) =>
+    request<AuthResponse>("/api/auth/signup", json("POST", d)),
+
+  // account
   me: () => request<Me>("/api/me"),
+  profile: () => request<Profile>("/api/profile"),
+  updateProfile: (d: { fullName: string; phone: string }) => request<Profile>("/api/profile", json("PUT", d)),
+  changePassword: (d: { currentPassword: string; newPassword: string }) =>
+    request<void>("/api/profile/password", json("POST", d)),
+
+  // bank
   providers: () => request<Provider[]>("/api/providers"),
   offers: () => request<Offer[]>("/api/offers"),
   transactions: () => request<Transaction[]>("/api/transactions"),
-  pay: (body: { provider: string; reference: string; amount: number }) =>
-    post<Transaction>("/api/payments", body),
+  pay: (d: { provider: string; reference: string; amount: number }) =>
+    request<Transaction>("/api/payments", json("POST", d)),
   lookup: (account: string) =>
     request<Recipient>(`/api/accounts/lookup?account=${encodeURIComponent(account)}`),
-  transfer: (body: { toAccount: string; amount: number; note: string }) =>
-    post<Transaction>("/api/transfers", body),
+  transfer: (d: { toAccount: string; amount: number; note?: string }) =>
+    request<Transaction>("/api/transfers", json("POST", d)),
 
-  depositCard: (body: { cardNumber: string; expiry: string; cvc: string; holder: string; amount: number }) =>
-    post<Transaction>("/api/deposits/card", body),
+  // deposits
+  depositCard: (d: { cardNumber: string; expiry: string; cvc: string; holder: string; amount: number }) =>
+    request<Transaction>("/api/deposits/card", json("POST", d)),
   vouchers: () => request<Voucher[]>("/api/deposits/vouchers"),
-  createVoucher: (amount: number) => post<Voucher>("/api/deposits/vouchers", { amount }),
+  createVoucher: (d: { amount: number }) => request<Voucher>("/api/deposits/vouchers", json("POST", d)),
   redeemVoucher: (code: string) =>
-    post<Transaction>(`/api/deposits/vouchers/${encodeURIComponent(code)}/redeem`),
+    request<Transaction>(`/api/deposits/vouchers/${encodeURIComponent(code)}/redeem`, json("POST")),
 
+  // goals
   goals: () => request<Goal[]>("/api/goals"),
-  createGoal: (body: { name: string; targetAmount: number; deadline: string | null }) =>
-    post<Goal>("/api/goals", body),
-  goalDeposit: (id: number, amount: number) => post<Goal>(`/api/goals/${id}/deposit`, { amount }),
-  goalWithdraw: (id: number, amount: number) => post<Goal>(`/api/goals/${id}/withdraw`, { amount }),
-  deleteGoal: (id: number) => request<void>(`/api/goals/${id}`, { method: "DELETE" }),
+  createGoal: (d: { name: string; targetAmount: number; deadline?: string | null }) =>
+    request<Goal>("/api/goals", json("POST", d)),
+  goalDeposit: (id: number, amount: number) => request<Goal>(`/api/goals/${id}/deposit`, json("POST", { amount })),
+  goalWithdraw: (id: number, amount: number) => request<Goal>(`/api/goals/${id}/withdraw`, json("POST", { amount })),
+  deleteGoal: (id: number) => request<void>(`/api/goals/${id}`, json("DELETE")),
 
-  profile: () => request<Profile>("/api/profile"),
-  updateProfile: (body: { fullName: string; phone: string }) =>
-    request<Profile>("/api/profile", { method: "PUT", body: JSON.stringify(body) }),
-  changePassword: (body: { currentPassword: string; newPassword: string }) =>
-    post<void>("/api/profile/password", body),
+  // scheduled transfers
+  scheduled: () => request<Scheduled[]>("/api/scheduled"),
+  createScheduled: (d: { toAccount: string; amount: number; note?: string; frequency: string; firstRun: string }) =>
+    request<Scheduled>("/api/scheduled", json("POST", d)),
+  cancelScheduled: (id: number) => request<void>(`/api/scheduled/${id}`, json("DELETE")),
 };

@@ -1,0 +1,127 @@
+.auth { display: grid; min-height: 100vh; grid-template-columns: 1fr; }
+@media (min-width: 1024px) { .auth { grid-template-columns: 1.1fr 1fr; } }
+
+.auth-showcase {
+  display: none; position: relative; overflow: hidden; flex-direction: column;
+  justify-content: space-between; padding: 48px 64px; gap: 40px;
+  border-right: 1px solid rgba(255, 255, 255, 0.07);
+}
+@media (min-width: 1024px) { .auth-showcase { display: flex; } }
+.auth-showcase > * { position: relative; }
+
+.auth-photo { position: absolute !important; inset: 0; background-size: cover; background-position: center; opacity: 0.6; animation: photoIn 1.6s ease both; }
+.auth-photo::after {
+  content: ""; position: absolute; inset: 0;
+  background:
+    linear-gradient(90deg, rgba(3, 3, 10, 0.92) 0%, rgba(3, 3, 10, 0.5) 55%, rgba(3, 3, 10, 0.85) 100%),
+    linear-gradient(0deg, rgba(3, 3, 10, 0.9), transparent 45%);
+}
+@keyframes photoIn { from { opacity: 0; transform: scale(1.06); } to { opacity: 0.6; transform: none; } }
+
+.aurora { position: absolute !important; inset: 0; pointer-events: none; filter: blur(70px); opacity: 0.55; }
+.aurora i { position: absolute; border-radius: 50%; }
+.aurora i:nth-child(1) {
+  width: 50vmax; height: 50vmax; left: -15%; top: -20%;
+  background: radial-gradient(circle, rgba(124, 109, 240, 0.5), transparent 65%);
+  animation: auroraA 24s ease-in-out infinite alternate;
+}
+.aurora i:nth-child(2) {
+  width: 40vmax; height: 40vmax; right: -15%; bottom: -20%;
+  background: radial-gradient(circle, rgba(60, 70, 190, 0.45), transparent 65%);
+  animation: auroraB 28s ease-in-out infinite alternate;
+}
+@keyframes auroraA { to { transform: translate(14%, 16%) scale(1.15); } }
+@keyframes auroraB { to { transform: translate(-16%, -12%) scale(1.1); } }
+
+.auth-copy h2 {
+  font-family: var(--font-serif, Georgia), serif; font-weight: 400;
+  font-size: clamp(34px, 3.4vw, 52px); line-height: 1.1; letter-spacing: -0.01em; max-width: 460px;
+}
+.auth-copy p { margin-top: 18px; max-width: 400px; color: #a4a5bb; font-size: 15px; line-height: 1.65; }
+
+.stage { display: flex; flex-direction: column; gap: 16px; width: min(400px, 100%); }
+.vcard {
+  position: relative; overflow: hidden; aspect-ratio: 1.586; border-radius: 18px; padding: 22px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  background: linear-gradient(145deg, rgba(29, 25, 66, 0.92) 0%, rgba(15, 13, 40, 0.92) 60%, rgba(10, 10, 28, 0.92) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 40px 80px -30px rgba(80, 70, 200, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  animation: float 7s ease-in-out infinite;
+}
+.vcard::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.09) 50%, transparent 65%);
+  transform: translateX(-120%); animation: sweep 6s ease-in-out 1.2s infinite;
+}
+@keyframes sweep { 0%, 60% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
+@keyframes float { 0%, 100% { transform: translateY(0) rotate(-0.8deg); } 50% { transform: translateY(-10px) rotate(0.4deg); } }
+.vc-top { display: flex; align-items: center; justify-content: space-between; color: #cfcbf9; }
+.vc-brand { font-family: var(--font-serif, Georgia), serif; letter-spacing: 0.25em; font-size: 15px; }
+.vc-chip { width: 38px; height: 28px; border-radius: 6px; background: linear-gradient(135deg, #ddd6ff, #8f84e8); }
+.vc-num { letter-spacing: 0.18em; font-size: 17px; color: #fff; margin-top: 10px; }
+.vc-foot { display: flex; justify-content: space-between; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: #9a9bb2; }
+
+.feed { display: flex; flex-direction: column; overflow: hidden; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(8, 8, 20, 0.6); backdrop-filter: blur(8px); }
+.feed-row {
+  display: flex; align-items: center; gap: 12px; padding: 12px 16px; font-size: 13px; opacity: 0;
+  animation: authRise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) forwards; animation-delay: calc(1s + var(--i, 0) * 0.45s);
+}
+.feed-row + .feed-row { border-top: 1px solid rgba(255, 255, 255, 0.06); }
+.feed-ico { display: flex; width: 32px; height: 32px; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.1); color: #b9b3f7; flex-shrink: 0; }
+.feed-row b { font-weight: 500; margin-left: auto; font-variant-numeric: tabular-nums; }
+.feed-row small { display: block; color: #8b8ca3; font-size: 11px; margin-top: 1px; }
+.pos { color: #5cc9a7; }
+
+.auth-panel { display: flex; align-items: center; justify-content: center; padding: 40px 24px; }
+.auth-box { width: 100%; max-width: 380px; }
+.auth-box > * { opacity: 0; animation: authRise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) forwards; animation-delay: calc(var(--i, 0) * 70ms + 100ms); }
+@keyframes authRise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+.auth-mobile-logo { margin-bottom: 28px; }
+@media (min-width: 1024px) { .auth-mobile-logo { display: none !important; } }
+.auth-title { font-family: var(--font-serif, Georgia), serif; font-weight: 400; font-size: 38px; letter-spacing: -0.01em; line-height: 1.1; }
+.auth-sub { margin-top: 10px; color: #8b8ca3; font-size: 14px; }
+
+.field { position: relative; margin-top: 14px; }
+.field input {
+  width: 100%; height: 56px; padding: 22px 14px 8px; border-radius: 10px; font-size: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.03); color: #ececf3; outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+.field input:hover { border-color: rgba(255, 255, 255, 0.18); }
+.field input:focus { border-color: #7c6df0; box-shadow: 0 0 0 3px rgba(124, 109, 240, 0.16); background: rgba(255, 255, 255, 0.04); }
+.field label { position: absolute; left: 14px; top: 18px; font-size: 14px; color: #8b8ca3; pointer-events: none; transform-origin: left top; transition: transform 0.18s ease, color 0.18s ease; }
+.field input:focus + label, .field input:not(:placeholder-shown) + label { transform: translateY(-11px) scale(0.78); }
+.field input:focus + label { color: #a89ff5; }
+.field input:-webkit-autofill { -webkit-text-fill-color: #ececf3; box-shadow: 0 0 0 100px #0c0c1a inset; }
+.field .toggle { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #8b8ca3; display: flex; padding: 4px; }
+.field .toggle:hover { color: #fff; }
+
+.meter { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-top: 10px; }
+.meter i { height: 3px; border-radius: 2px; background: rgba(255, 255, 255, 0.1); transition: background 0.3s; }
+.meter i.on { background: var(--c); }
+
+.auth-error { margin-top: 14px; font-size: 13px; color: #ef7480; animation: shake 0.4s; }
+@keyframes shake { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
+
+.auth-btn {
+  margin-top: 22px; height: 50px; width: 100%; border-radius: 10px; background: #7c6df0; color: #fff;
+  font-weight: 500; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: background 0.2s, transform 0.15s;
+}
+.auth-btn:hover:not(:disabled) { background: #8e80f3; }
+.auth-btn:hover:not(:disabled) svg { transform: translateX(3px); }
+.auth-btn svg { transition: transform 0.2s; }
+.auth-btn:active:not(:disabled) { transform: scale(0.99); }
+.auth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.spin { width: 16px; height: 16px; border: 2px solid rgba(255, 255, 255, 0.35); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.auth-switch { margin-top: 22px; text-align: center; font-size: 14px; color: #8b8ca3; }
+.auth-link { color: #fff; text-underline-offset: 4px; }
+.auth-link:hover { text-decoration: underline; }
+.auth-foot { margin-top: 36px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 11px; color: #6d6e86; }
+
+@media (prefers-reduced-motion: reduce) {
+  .auth *, .auth *::before, .auth *::after { animation-duration: 0.01ms !important; animation-delay: 0s !important; }
+}

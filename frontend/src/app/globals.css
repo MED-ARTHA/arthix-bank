@@ -1,20 +1,21 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #02020a;
-  --surface: rgba(255, 255, 255, 0.035);
-  --surface-hover: rgba(255, 255, 255, 0.065);
-  --line: rgba(255, 255, 255, 0.08);
-  --text: #ebebf3;
-  --muted: #8a8aa2;
-  --accent: #7b6cf0;
-  --accent-soft: rgba(123, 108, 240, 0.16);
-  --ok: #4fd1a5;
-  --err: #f0707a;
-  --amber: #fbbf24;
-  --sky: #38bdf8;
-  --teal: #2dd4bf;
-  --rose: #fb7185;
+  --bg: #03030a;
+  --surface: rgba(255, 255, 255, 0.028);
+  --surface-hover: rgba(255, 255, 255, 0.055);
+  --line: rgba(255, 255, 255, 0.09);
+  --text: #ececf3;
+  --muted: #8b8ca3;
+  --accent: #7c6df0;
+  --accent-soft: rgba(124, 109, 240, 0.14);
+  --ok: #5cc9a7;
+  --err: #ef7480;
+  /* legacy names used by older pages, kept neutral on purpose */
+  --amber: #cfcbe8;
+  --sky: #cfcbe8;
+  --teal: #cfcbe8;
+  --rose: #cfcbe8;
 }
 
 html { background: var(--bg); }
@@ -23,8 +24,15 @@ body {
   background: transparent;
   color: var(--text);
   min-height: 100vh;
+  font-family: var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   font-variant-numeric: tabular-nums;
+}
+
+.serif {
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.01em;
 }
 
 /* planet arc */
@@ -39,12 +47,12 @@ body::before {
   border-radius: 50%;
   pointer-events: none;
   background:
-    radial-gradient(ellipse at 78% 6%, rgba(70, 80, 200, 0.32), transparent 38%),
+    radial-gradient(ellipse at 78% 6%, rgba(70, 80, 200, 0.30), transparent 38%),
     radial-gradient(circle at 60% 60%, #03030a 0%, #03030a 55%, #0a0e2c 100%);
   box-shadow:
-    inset -2px 2px 0 rgba(110, 120, 235, 0.22),
-    inset 0 0 0 14px rgba(18, 22, 74, 0.35),
-    inset 0 30px 140px rgba(60, 70, 190, 0.12);
+    inset -2px 2px 0 rgba(110, 120, 235, 0.20),
+    inset 0 0 0 14px rgba(18, 22, 74, 0.32),
+    inset 0 30px 140px rgba(60, 70, 190, 0.10);
 }
 
 /* star dust */
@@ -54,7 +62,7 @@ body::after {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  opacity: 0.6;
+  opacity: 0.55;
   background-image:
     radial-gradient(1px 1px at 20px 30px, rgba(255, 255, 255, 0.8), transparent),
     radial-gradient(1px 1px at 90px 80px, rgba(255, 255, 255, 0.55), transparent),
@@ -67,38 +75,16 @@ body::after {
 .card {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 16px;
-  backdrop-filter: blur(6px);
+  border-radius: 12px;
 }
-.card-hover { transition: background 0.2s, border-color 0.2s, transform 0.25s, box-shadow 0.25s; }
-.card-hover:hover {
-  background: var(--surface-hover);
-  border-color: rgba(255, 255, 255, 0.16);
-  transform: translateY(-3px);
-  box-shadow: 0 14px 40px -16px var(--c, rgba(123, 108, 240, 0.55));
-}
+.card-hover { transition: background 0.2s, border-color 0.2s; }
+.card-hover:hover { background: var(--surface-hover); border-color: rgba(255, 255, 255, 0.16); }
 
-/* hero balance card */
 .glow-card {
-  position: relative;
-  overflow: hidden;
-  border-radius: 20px;
-  border: 1px solid rgba(140, 125, 255, 0.28);
-  background: linear-gradient(155deg, rgba(123, 108, 240, 0.2), rgba(45, 212, 191, 0.05) 62%, rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(124, 109, 240, 0.28);
+  border-radius: 12px;
+  background: linear-gradient(160deg, rgba(124, 109, 240, 0.12), rgba(255, 255, 255, 0.015));
 }
-.glow-card::before {
-  content: "";
-  position: absolute;
-  width: 360px;
-  height: 360px;
-  right: -120px;
-  top: -170px;
-  background: radial-gradient(circle, rgba(123, 108, 240, 0.4), transparent 65%);
-  animation: drift 9s ease-in-out infinite alternate;
-  pointer-events: none;
-}
-.glow-card > * { position: relative; }
-@keyframes drift { to { transform: translate(-50px, 36px) scale(1.18); } }
 
 .label {
   font-size: 11px;
@@ -109,7 +95,7 @@ body::after {
 
 .input {
   width: 100%;
-  border-radius: 10px;
+  border-radius: 8px;
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.03);
   padding: 0.7rem 0.9rem;
@@ -118,24 +104,23 @@ body::after {
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 .input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-.input::placeholder { color: #5f5f78; }
+.input::placeholder { color: #5f6078; }
 select.input option { background: #0d0d18; }
 input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; }
 input[type="date"] { color-scheme: dark; }
 
 .btn {
-  border-radius: 10px;
-  padding: 0.7rem 1.1rem;
+  border-radius: 8px;
+  padding: 0.65rem 1.1rem;
   font-weight: 500;
   font-size: 14px;
-  transition: transform 0.15s, background 0.2s, opacity 0.2s, box-shadow 0.2s;
+  transition: background 0.2s, opacity 0.2s, border-color 0.2s;
 }
-.btn:active { transform: scale(0.98); }
 .btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:hover { background: #8d80f5; box-shadow: 0 8px 28px -10px rgba(123, 108, 240, 0.9); }
-.btn-primary:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
+.btn-primary:hover { background: #8e80f3; }
+.btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
 .btn-ghost { border: 1px solid var(--line); color: var(--text); }
-.btn-ghost:hover { background: var(--surface-hover); }
+.btn-ghost:hover { background: var(--surface-hover); border-color: rgba(255, 255, 255, 0.18); }
 .btn-ghost:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .chip {
@@ -158,16 +143,14 @@ input[type="date"] { color-scheme: dark; }
   text-transform: uppercase;
 }
 
-.logo-glow { filter: drop-shadow(0 0 14px rgba(123, 108, 240, 0.5)); }
-
 /* motion */
-@keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
-.rise { animation: rise 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) both; animation-delay: calc(var(--i, 0) * 70ms); }
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.rise { animation: rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both; animation-delay: calc(var(--i, 0) * 60ms); }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 .overlay { animation: fade 0.2s both; }
-.fade-in { animation: fade 1.2s 0.4s both; }
-@keyframes pop { from { opacity: 0; transform: translateY(16px) scale(0.97); } to { opacity: 1; transform: none; } }
-.pop { animation: pop 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.fade-in { animation: fade 1s 0.3s both; }
+@keyframes pop { from { opacity: 0; transform: translateY(14px) scale(0.98); } to { opacity: 1; transform: none; } }
+.pop { animation: pop 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
 @keyframes draw { to { stroke-dashoffset: 0; } }
 .check-circle { stroke-dasharray: 160; stroke-dashoffset: 160; animation: draw 0.6s 0.1s ease forwards; }
 .check-mark { stroke-dasharray: 40; stroke-dashoffset: 40; animation: draw 0.4s 0.55s ease forwards; }
@@ -175,22 +158,20 @@ input[type="date"] { color-scheme: dark; }
 @keyframes grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
 .bar {
   transform-origin: bottom;
-  background: linear-gradient(180deg, #8b7cf6, rgba(45, 212, 191, 0.7));
-  animation: grow 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-  animation-delay: calc(var(--i, 0) * 70ms);
+  background: rgba(124, 109, 240, 0.78);
+  transition: background 0.2s;
+  animation: grow 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(var(--i, 0) * 60ms);
 }
+.bar:hover { background: #a89ff5; }
 @keyframes seg { from { stroke-dasharray: 0 999; } }
 .donut-seg { animation: seg 1s cubic-bezier(0.2, 0.7, 0.2, 1) both; animation-delay: calc(var(--i, 0) * 120ms); }
-@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-.float { animation: float 6s ease-in-out infinite; }
 @keyframes shimmer { from { background-position: -200% 0; } to { background-position: 200% 0; } }
 .shimmer {
-  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.04) 75%);
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.04) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.6s linear infinite;
 }
-@keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgba(79, 209, 165, 0.5); } 100% { box-shadow: 0 0 0 14px rgba(79, 209, 165, 0); } }
-.pulse-ok { animation: pulse-ring 1.8s ease-out infinite; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
