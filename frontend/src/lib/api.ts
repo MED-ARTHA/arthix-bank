@@ -113,7 +113,11 @@ export const api = {
   // auth
   login: (d: { email: string; password: string }) => request<AuthResponse>("/api/auth/login", json("POST", d)),
   signup: (d: { fullName: string; email: string; password: string }) =>
-    request<AuthResponse>("/api/auth/signup", json("POST", d)),
+    request<{ email: string; expiresInMinutes: number }>("/api/auth/signup", json("POST", d)),
+  resendCode: (email: string) =>
+    request<{ email: string; expiresInMinutes: number }>("/api/auth/resend", json("POST", { email })),
+  verifyEmail: (d: { fullName: string; email: string; password: string; code: string }) =>
+    request<AuthResponse>("/api/auth/verify", json("POST", d)),
 
   // account
   me: () => request<Me>("/api/me"),
