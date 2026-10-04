@@ -1,0 +1,56 @@
+export type Note = { value: number; from: string; to: string; fact: string };
+export type Coin = { value: number; size: number; ring: string; core: string; fact: string };
+export type Bank = { id: string; name: string; kind: string; from: string; to: string; blurb: string };
+
+export const AR_BAM = "\u0628\u0646\u0643 \u0627\u0644\u0645\u063a\u0631\u0628";
+export const AR_DIRHAM = "\u062f\u0631\u0647\u0645";
+export const AR_KINGDOM = "\u0627\u0644\u0645\u0645\u0644\u0643\u0629 \u0627\u0644\u0645\u063a\u0631\u0628\u064a\u0629";
+
+// Colours are an artistic approximation. Tweak freely.
+export const NOTES: Note[] = [
+  { value: 20, from: "#3b9a94", to: "#16535a", fact: "Introduced in 1996. A polymer 20 DH followed in 2019 for the 20th anniversary of the King's accession." },
+  { value: 50, from: "#6fae5f", to: "#2c6034", fact: "A commemorative 50 DH was issued in 2009 for the 50th anniversary of Bank Al-Maghrib." },
+  { value: 100, from: "#c0884a", to: "#5e3a1c", fact: "In circulation since 1970. A new series including a 100 DH note appeared in November 2023." },
+  { value: 200, from: "#5b86d6", to: "#1d3b7a", fact: "Introduced in 1991. The largest note: vendors often struggle to break it." },
+];
+
+const SILVER = { ring: "#cfd3dc", core: "#b9bfcb" };
+const GOLD = "#d7b15c";
+
+export const COINS: Coin[] = [
+  { value: 1, size: 104, ...SILVER, fact: "Old nicknames like \"duro\" and \"real\" still pop up for the silver dirham coins." },
+  { value: 2, size: 116, ...SILVER, fact: "The coin for bread, tea and a handful of change." },
+  { value: 5, size: 126, ring: GOLD, core: SILVER.core, fact: "Bimetallic: a golden ring around a silver core." },
+  { value: 10, size: 140, ring: SILVER.ring, core: GOLD, fact: "The biggest everyday coin, bimetallic. New coin designs were released in November 2023." },
+];
+
+export const BANKS: Bank[] = [
+  { id: "bank-al-maghrib", name: "Bank Al-Maghrib", kind: "Central bank", from: "#1c2b5a", to: "#0a1230", blurb: "Morocco's central bank. It issues the dirham and supervises the banking system. Founded in 1959." },
+  { id: "attijariwafa", name: "Attijariwafa bank", kind: "Private", from: "#e8952a", to: "#6b2a0b", blurb: "One of the largest banks in the country, with a dense branch network and operations across Africa." },
+  { id: "banque-populaire", name: "Banque Populaire", kind: "Cooperative", from: "#ee7a2c", to: "#13408a", blurb: "A group with cooperative roots and a network of regional Banques Populaires across the kingdom." },
+  { id: "bank-of-africa", name: "Bank of Africa", kind: "Private", from: "#2f9a55", to: "#0d3d24", blurb: "Known as BMCE Bank of Africa, with a strong presence in other African countries." },
+  { id: "cih", name: "CIH Bank", kind: "Private", from: "#3b73d4", to: "#14275c", blurb: "Historically tied to housing and tourism financing, today a universal bank with a strong digital offer." },
+  { id: "credit-agricole", name: "Crédit Agricole du Maroc", kind: "Agricultural", from: "#4aa05a", to: "#1d4a2a", blurb: "Focused on agriculture and rural areas, and present in towns and villages across the country." },
+  { id: "bmci", name: "BMCI", kind: "Private", from: "#2a9a7a", to: "#0b3f33", blurb: "Part of the BNP Paribas group, serving individuals and companies." },
+  { id: "credit-du-maroc", name: "Crédit du Maroc", kind: "Private", from: "#c9473d", to: "#541511", blurb: "A retail and corporate bank with branches nationwide." },
+  { id: "al-barid-bank", name: "Al Barid Bank", kind: "Postal", from: "#e6c13a", to: "#2a4f9e", blurb: "The banking arm of the national postal group, reaching customers through post offices." },
+];
+
+export const CULTURE = [
+  { icon: "users", title: "Daret", text: "A rotating savings circle: friends or family each put in a fixed sum every month, and one member takes the whole pot in turn. No interest, only trust." },
+  { icon: "plane", title: "MRE transfers", text: "Moroccans living abroad send money home to their families. It is a long-standing pillar of household income and of the country's foreign currency." },
+  { icon: "store", title: "Cash and haggling", text: "Souks and small shops run on small notes and coins, and prices are often negotiated. Vendors prefer 5, 10 and 20 DH, so breaking a 200 is a real mission." },
+  { icon: "moon", title: "Saving for Eid", text: "Many families put money aside for months ahead of Eid al-Adha. A good use for a savings goal." },
+] as const;
+
+export const DENOMS = [200, 100, 50, 20, 10, 5, 2, 1];
+
+export function breakDown(amount: number): [number, number][] {
+  let left = Math.min(Math.floor(amount), 1_000_000);
+  const out: [number, number][] = [];
+  for (const d of DENOMS) {
+    const n = Math.floor(left / d);
+    if (n > 0) { out.push([d, n]); left -= n * d; }
+  }
+  return out;
+}
