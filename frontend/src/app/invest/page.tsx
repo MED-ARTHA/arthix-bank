@@ -7,8 +7,9 @@ import AppShell from "@/components/AppShell";
 import { Donut } from "@/components/Charts";
 import { inv, type Instrument, type Holding, type Model, type Order, type Portfolio } from "@/lib/investApi";
 import { delay, money } from "@/lib/format";
+import EventsFeed, { EventsTicker } from "@/components/EventsFeed";
 
-type Tab = "portfolio" | "market" | "smart" | "history";
+type Tab = "portfolio" | "market" | "smart" | "news" | "history";
 const FEE = 0.002;
 const COLORS: Record<string, string> = {
   Equities: "#7c6df0", Bonds: "#5cc9a7", Commodities: "#e0b04a", "Real estate": "#6fb3f2", Digital: "#ef7480",
@@ -250,11 +251,13 @@ export default function InvestPage() {
           <h1 className="serif mt-2 text-4xl">Invest</h1>
         </div>
         <div className="inv-tabs">
-          {([["portfolio", "Portfolio"], ["market", "Market"], ["smart", "Smart portfolio"], ["history", "History"]] as [Tab, string][]).map(([id, l]) => (
+          {([["portfolio", "Portfolio"], ["market", "Market"], ["smart", "Smart portfolio"], ["news", "Events"], ["history", "History"]] as [Tab, string][]).map(([id, l]) => (
             <button key={id} className={"inv-tab" + (tab === id ? " on" : "")} onClick={() => setTab(id)}>{l}</button>
           ))}
         </div>
       </div>
+
+      <EventsTicker onOpen={() => setTab("news")} />
 
       <div className="mt-8">
         {tab === "portfolio" && (
@@ -341,6 +344,8 @@ export default function InvestPage() {
         )}
 
         {tab === "smart" && <Smart models={models} cash={pf?.cash ?? 0} onDone={(m) => { done(m); setTab("portfolio"); }} />}
+
+        {tab === "news" && <EventsFeed />}
 
         {tab === "history" && (
           <section className="card">

@@ -1,6 +1,7 @@
 "use client";
 
 import AuthGuard from "@/components/AuthGuard";
+import Assistant from "@/components/Assistant";
 
 import Logo from "@/components/Logo";
 
@@ -159,6 +160,7 @@ export default function AppShell(props: React.ComponentProps<typeof AppShellInne
   return (
     <AuthGuard>
       <AppShellInner {...props} />
+      <Assistant />
     </AuthGuard>
   );
 }

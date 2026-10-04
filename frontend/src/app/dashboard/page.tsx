@@ -1,5 +1,7 @@
 "use client";
 
+import OverviewHero from "@/components/OverviewHero";
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import AppShell from "@/components/AppShell";
@@ -50,6 +52,7 @@ export default function DashboardPage() {
 
   return (
     <AppShell>
+      <OverviewHero />
       <div className="space-y-10">
         <header className="rise">
           <p className="label">{today || " "}</p>

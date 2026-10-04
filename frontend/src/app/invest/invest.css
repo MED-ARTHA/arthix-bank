@@ -51,3 +51,22 @@
 .inv-sum div { display: flex; justify-content: space-between; color: #a4a5bb; }
 .inv-sum b { color: #fff; font-weight: 500; }
 .inv-toast { position: fixed; z-index: 80; left: 50%; bottom: 28px; transform: translateX(-50%); padding: 12px 20px; border-radius: 999px; font-size: 13px; background: #14122e; border: 1px solid rgba(167,157,255,.4); box-shadow: 0 20px 50px -20px #000; animation: selIn .25s ease; }
+/* ---- market events ---- */
+.ev-ticker { display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 22px; padding: 11px 16px; border-radius: 12px; text-align: left; font-size: 13px;
+  border: 1px solid rgba(255,255,255,.09); background: rgba(255,255,255,.03); animation: evIn .5s cubic-bezier(.2,.8,.2,1); transition: border-color .2s; }
+.ev-ticker:hover { border-color: rgba(167,157,255,.45); }
+@keyframes evIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.ev-live { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 999px; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: #5cc9a7; background: rgba(92,201,167,.12); }
+.ev-ticker-text { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ev-impact { font-variant-numeric: tabular-nums; font-size: 12px; font-weight: 500; }
+.ev-impact.up { color: #5cc9a7; } .ev-impact.down { color: #ef7480; }
+.ev-list { position: relative; display: grid; gap: 14px; }
+.ev-item { display: flex; gap: 16px; padding: 18px 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,.08); background: #0b0b18; animation: evIn .5s both; }
+.ev-dot { display: flex; width: 36px; height: 36px; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 50%; }
+.ev-dot.up { color: #5cc9a7; background: rgba(92,201,167,.12); } .ev-dot.down { color: #ef7480; background: rgba(239,116,128,.12); }
+.ev-body { min-width: 0; flex: 1; }
+.ev-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.ev-head h4 { font-family: var(--font-serif, Georgia), serif; font-size: 18px; }
+.ev-body p { margin-top: 6px; font-size: 13px; color: #9b9cb3; }
+.ev-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
+.ev-meta small { margin-left: auto; color: #6d6e86; font-size: 11px; }
