@@ -8,7 +8,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  ArrowLeftRight, Gift, House, List, LogOut, Menu, MessageCircle, Plus, Receipt, Send, Target, User, type LucideIcon,
+  ArrowLeftRight, Gift, House, List, TrendingUp, LogOut, Menu, MessageCircle, Plus, Receipt, Send, Target, User, type LucideIcon,
 } from "lucide-react";
 import ChatProvider, { useChat } from "@/components/ChatProvider";
 import { api, Me } from "@/lib/api";
@@ -23,6 +23,7 @@ const banking: Item[] = [
   { href: "/deposit", label: "Add money", icon: Plus },
   { href: "/transfers", label: "Transfers", icon: Send },
   { href: "/scheduled", label: "Scheduled", icon: ArrowLeftRight },
+  { href: "/invest", label: "Invest", icon: TrendingUp },
   { href: "/payments", label: "Payments", icon: Receipt },
   { href: "/goals", label: "Savings goals", icon: Target },
   { href: "/transactions", label: "Transactions", icon: List },
