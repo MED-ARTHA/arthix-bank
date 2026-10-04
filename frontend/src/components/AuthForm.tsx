@@ -4,8 +4,9 @@ import "./auth.css";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowDownLeft, ArrowRight, ArrowUpRight, Eye, EyeOff, MailCheck, Receipt, ShieldCheck, Wifi } from "lucide-react";
+import { ArrowDownLeft, ArrowRight, ArrowUpRight, Eye, EyeOff, MailCheck, Receipt, ShieldCheck } from "lucide-react";
 import Logo from "@/components/Logo";
+import Card3D from "@/components/Card3D";
 import { api } from "@/lib/api";
 
 const strengthOf = (p: string) => {
@@ -105,17 +106,7 @@ export default function AuthForm({ mode }: { mode: "login" | "signup" }) {
         </div>
 
         <div className="stage" aria-hidden="true">
-          <div className="vcard">
-            <div className="vc-top">
-              <span className="vc-brand">ARTHIX</span>
-              <Wifi size={18} strokeWidth={1.5} style={{ transform: "rotate(90deg)" }} />
-            </div>
-            <div>
-              <div className="vc-chip" />
-              <p className="vc-num">&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 4821</p>
-            </div>
-            <div className="vc-foot"><span>Arthix Classic</span><span>Valid 09/29</span></div>
-          </div>
+          <Card3D />
 
           <div className="feed">
             <div className="feed-row" style={iv(0)}>
