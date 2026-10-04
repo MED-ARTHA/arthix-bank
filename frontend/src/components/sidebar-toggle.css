@@ -1,0 +1,34 @@
+/* Content wrapper of the shell animates when the sidebar goes away. */
+.lg\:pl-64 { transition: padding-left 0.3s ease; }
+
+.nav-toggle {
+  position: fixed;
+  z-index: 45;
+  top: 24px;
+  left: 16rem;
+  display: none;
+  width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  color: #9b9cb3;
+  background: #0b0b18;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: left 0.3s ease, transform 0.3s ease, color 0.2s, border-color 0.2s;
+}
+.nav-toggle:hover { color: #fff; border-color: rgba(167, 157, 255, 0.55); }
+.nav-toggle:focus-visible { outline: 2px solid #7c6df0; outline-offset: 2px; }
+
+@media (min-width: 1024px) {
+  .nav-toggle { display: flex; }
+
+  html[data-nav="hidden"] aside.fixed {
+    translate: -100% 0 !important;
+    visibility: hidden;
+    transition: transform 0.3s ease, translate 0.3s ease, visibility 0s linear 0.3s !important;
+  }
+  html[data-nav="hidden"] .lg\:pl-64 { padding-left: 0 !important; }
+  html[data-nav="hidden"] .nav-toggle { left: 16px; transform: none; }
+}
