@@ -116,7 +116,7 @@ export default function AuthForm({ mode }: { mode: "login" | "signup" }) {
         <div className="stage" aria-hidden="true">
           <Card3D />
 
-          <PartnerStrip /></div>
+          </div>
       </aside>
 
       <section className="auth-panel">
@@ -221,6 +221,7 @@ export default function AuthForm({ mode }: { mode: "login" | "signup" }) {
           </p>
         </form>
       </section>
+    <div className="ps-bar"><PartnerStrip /></div>
     </main>
   );
 }

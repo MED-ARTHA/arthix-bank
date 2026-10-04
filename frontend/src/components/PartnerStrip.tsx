@@ -11,7 +11,7 @@ const MARKS = [
 
 /** Infinite "trusted by" strip. Names are fictional placeholders: replace with real partner logos. */
 export default function PartnerStrip() {
-  const row = [...MARKS, ...MARKS];
+  const row = [...MARKS, ...MARKS, ...MARKS, ...MARKS];
   return (
     <div className="ps" aria-label="Partners">
       <p className="ps-label"><i />Trusted partners<i /></p>
