@@ -194,3 +194,19 @@ input[type="date"] { color-scheme: dark; }
   #receipt .label, #receipt .muted { color: #555 !important; }
   .no-print { display: none !important; }
 }
+/* ---- scrollbars ---- */
+html { color-scheme: dark; }
+* { scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.18) transparent; }
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-button { display: none; }
+*::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16) padding-box;
+}
+*::-webkit-scrollbar-thumb:hover { background: rgba(167, 157, 255, 0.5) padding-box; }
+
+/* The sidebar scrolls, but without any visible bar. */
+aside, aside * { scrollbar-width: none; }
+aside::-webkit-scrollbar, aside *::-webkit-scrollbar { display: none; }

@@ -39,7 +39,7 @@ export default function DiscoverPage() {
             {NOTES.map((n) => (
               <figure key={n.value} className="dc-item">
                 <Banknote note={n} />
-                <figcaption><b>{n.value} DH</b><p>{n.fact}</p><small>Click the note to flip it</small></figcaption>
+                <figcaption><b>{n.value} DH</b><p>{n.fact}</p><small>Drag to rotate, click to flip, double-click to reset</small></figcaption>
               </figure>
             ))}
           </section>
@@ -50,7 +50,7 @@ export default function DiscoverPage() {
             {COINS.map((c) => (
               <figure key={c.value} className="dc-item dc-item-coin">
                 <CoinView coin={c} />
-                <figcaption><b>{c.value} DH</b><p>{c.fact}</p></figcaption>
+                <figcaption><b>{c.value} DH</b><p>{c.fact}</p><small>Drag to rotate</small></figcaption>
               </figure>
             ))}
           </section>

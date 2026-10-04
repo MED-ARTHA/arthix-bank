@@ -20,8 +20,8 @@ const GOLD = "#d7b15c";
 export const COINS: Coin[] = [
   { value: 1, size: 104, ...SILVER, fact: "Old nicknames like \"duro\" and \"real\" still pop up for the silver dirham coins." },
   { value: 2, size: 116, ...SILVER, fact: "The coin for bread, tea and a handful of change." },
-  { value: 5, size: 126, ring: GOLD, core: SILVER.core, fact: "Bimetallic: a golden ring around a silver core." },
-  { value: 10, size: 140, ring: SILVER.ring, core: GOLD, fact: "The biggest everyday coin, bimetallic. New coin designs were released in November 2023." },
+  { value: 5, size: 126, ring: SILVER.ring, core: GOLD, fact: "Bimetallic: a silver ring around a golden core. The 2023 reverse shows modern landmarks." },
+  { value: 10, size: 140, ring: GOLD, core: SILVER.core, fact: "The biggest everyday coin: a golden ring around a silver core. The 2023 reverse shows a cable-stayed bridge and a high-speed train." },
 ];
 
 export const BANKS: Bank[] = [

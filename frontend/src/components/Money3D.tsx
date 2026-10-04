@@ -1,9 +1,163 @@
 "use client";
 
-import { useRef, useState, type CSSProperties, type PointerEvent } from "react";
-import { AR_BAM, AR_DIRHAM, AR_KINGDOM, type Bank, type Coin, type Note } from "@/lib/moroccan";
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from "react";
+import type { Bank, Coin, Note } from "@/lib/moroccan";
 
-/** Pointer tilt: writes --rx / --ry on the element, CSS does the rest. Ignored on touch. */
+const MONEY = "/images/money";
+const NOTE_RATIO: Record<number, number> = { 20: 1.9, 50: 1.95, 100: 2.06, 200: 2.08 };
+const PAPER_LAYERS = [-1, 0, 1];
+const COIN_LAYERS = Array.from({ length: 11 }, (_, i) => i - 5);
+const RESUME_AFTER_MS = 2500;
+const COIN_SPIN = 0.6;
+
+type Mode = "sway" | "spin";
+
+type Spin = {
+  rx: number; ry: number; vx: number; vy: number;
+  gx: number | null; gy: number | null;
+  down: boolean; moved: number; last: number; amp: number;
+};
+
+/**
+ * Free rotation with the pointer, with inertia, plus an automatic motion that pauses
+ * while the user interacts and resumes a moment after.
+ *  - "sway": the object gently rocks around its pose (banknotes)
+ *  - "spin": the object turns continuously (coins)
+ * Every frame also publishes the lighting variables used by the shadow and the gloss.
+ */
+function useSpin(home: { rx: number; ry: number }, mode: Mode) {
+  const ref = useRef<HTMLDivElement>(null);
+  const k = useRef<Spin>({
+    rx: home.rx, ry: home.ry, vx: 0, vy: 0, gx: null, gy: null,
+    down: false, moved: 0, last: -RESUME_AFTER_MS, amp: 0,
+  });
+
+  useEffect(() => {
+    const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let raf = 0;
+
+    const frame = (now: number) => {
+      const s = k.current;
+      const idle = !calm && !s.down && s.gx === null && now - s.last > RESUME_AFTER_MS;
+
+      if (!s.down) {
+        if (s.gx !== null && s.gy !== null) {
+          s.rx += (s.gx - s.rx) * 0.14;
+          s.ry += (s.gy - s.ry) * 0.14;
+          if (Math.abs(s.gx - s.rx) < 0.1 && Math.abs(s.gy - s.ry) < 0.1) {
+            s.rx = s.gx; s.ry = s.gy; s.gx = null; s.gy = null;
+          }
+        } else {
+          s.rx += s.vx; s.ry += s.vy;
+          s.vx *= 0.93; s.vy *= 0.93;
+          if (idle && mode === "spin") s.ry += COIN_SPIN;
+        }
+      }
+
+      s.amp += ((idle && mode === "sway" ? 1 : 0) - s.amp) * 0.04;
+      const t = now / 1000;
+      const rx = s.rx + Math.cos(t * 0.9) * 4 * s.amp;
+      const ry = s.ry + Math.sin(t * 0.7) * 16 * s.amp;
+
+      const el = ref.current;
+      if (el) {
+        el.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
+        const stage = el.parentElement;
+        if (stage) {
+          const a = (ry * Math.PI) / 180;
+          const b = (rx * Math.PI) / 180;
+          stage.style.setProperty("--sx", `${(-Math.sin(a) * 24).toFixed(1)}px`);
+          stage.style.setProperty("--sw", (0.45 + 0.55 * Math.abs(Math.cos(a))).toFixed(2));
+          stage.style.setProperty("--so", (0.55 + 0.45 * Math.abs(Math.cos(b))).toFixed(2));
+          stage.style.setProperty("--gl", `${((Math.sin(a) * 0.5 + 0.5) * 100).toFixed(0)}%`);
+        }
+      }
+      raf = requestAnimationFrame(frame);
+    };
+
+    raf = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(raf);
+  }, [mode]);
+
+  const release = () => { k.current.down = false; k.current.last = performance.now(); };
+
+  return {
+    ref,
+    wasTap: () => k.current.moved < 6,
+    flip() {
+      const s = k.current;
+      s.gx = home.rx;
+      s.gy = (Math.round(s.ry / 180) + 1) * 180;
+      s.vx = 0; s.vy = 0; s.last = performance.now();
+    },
+    reset() {
+      const s = k.current;
+      s.gx = Math.round((s.rx - home.rx) / 360) * 360 + home.rx;
+      s.gy = Math.round(s.ry / 360) * 360 + home.ry;
+      s.vx = 0; s.vy = 0; s.last = performance.now();
+    },
+    bind: {
+      onPointerDown(e: PointerEvent<HTMLDivElement>) {
+        const s = k.current;
+        e.currentTarget.setPointerCapture(e.pointerId);
+        s.down = true; s.moved = 0; s.last = performance.now();
+        s.gx = null; s.gy = null; s.vx = 0; s.vy = 0;
+      },
+      onPointerMove(e: PointerEvent<HTMLDivElement>) {
+        const s = k.current;
+        if (!s.down) return;
+        s.moved += Math.abs(e.movementX) + Math.abs(e.movementY);
+        s.ry += e.movementX * 0.6;
+        s.rx -= e.movementY * 0.6;
+        s.vy = e.movementX * 0.6;
+        s.vx = -e.movementY * 0.6;
+      },
+      onPointerUp: release,
+      onPointerCancel: release,
+    },
+  };
+}
+
+export function Banknote({ note }: { note: Note }) {
+  const spin = useSpin({ rx: -6, ry: 0 }, "sway");
+  const style = { "--ratio": NOTE_RATIO[note.value] ?? 2 } as CSSProperties;
+  return (
+    <div className="dc-stage dc-stage-note" style={style} {...spin.bind}
+      onClick={() => spin.wasTap() && spin.flip()} onDoubleClick={spin.reset}
+      role="img" aria-label={`${note.value} dirham banknote, drag to rotate`}>
+      <span className="dc-shadow" aria-hidden="true" />
+      <div ref={spin.ref} className="dc-obj">
+        {PAPER_LAYERS.map((z) => <i key={z} className="dc-ply" style={{ transform: `translateZ(${z}px)` }} />)}
+        <img className="dc-sheet" src={`${MONEY}/${note.value}dh.jpg`} alt="" draggable={false}
+          style={{ transform: "translateZ(1.5px)" }} />
+        <img className="dc-sheet" src={`${MONEY}/${note.value}dhvers.jpg`} alt="" draggable={false}
+          style={{ transform: "rotateY(180deg) translateZ(1.5px)" }} />
+        <span className="dc-gloss" style={{ transform: "translateZ(1.6px)" }} />
+        <span className="dc-gloss" style={{ transform: "rotateY(180deg) translateZ(1.6px)" }} />
+      </div>
+    </div>
+  );
+}
+
+export function CoinView({ coin }: { coin: Coin }) {
+  const spin = useSpin({ rx: -10, ry: -20 }, "spin");
+  const style = { "--d": `${coin.size}px`, "--edge": coin.ring } as CSSProperties;
+  return (
+    <div className="dc-stage dc-stage-coin" style={style} {...spin.bind} onDoubleClick={spin.reset}
+      role="img" aria-label={`${coin.value} dirham coin, drag to rotate`}>
+      <span className="dc-shadow" aria-hidden="true" />
+      <div ref={spin.ref} className="dc-obj dc-coin-obj">
+        {COIN_LAYERS.map((z) => <i key={z} className="dc-edge" style={{ transform: `translateZ(${z}px)` }} />)}
+        <img className="dc-cface" src={`${MONEY}/${coin.value}dh.png`} alt="" draggable={false}
+          style={{ transform: "translateZ(6px)" }} />
+        <img className="dc-cface" src={`${MONEY}/${coin.value}dhvers.png`} alt="" draggable={false}
+          style={{ transform: "rotateY(180deg) translateZ(6px)" }} />
+      </div>
+    </div>
+  );
+}
+
+/** Pointer tilt for the bank cards: writes --rx / --ry, CSS does the rest. Ignored on touch. */
 function useTilt<T extends HTMLElement>(max = 10) {
   const ref = useRef<T>(null);
   const set = (rx: string, ry: string) => {
@@ -22,73 +176,6 @@ function useTilt<T extends HTMLElement>(max = 10) {
     },
     onPointerLeave() { set("0deg", "0deg"); },
   };
-}
-
-/** Eight-pointed star (khatam), the classic Moroccan motif. */
-export function Star({ size = 56 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="3" aria-hidden="true">
-      <rect x="24" y="24" width="52" height="52" />
-      <rect x="24" y="24" width="52" height="52" transform="rotate(45 50 50)" />
-      <circle cx="50" cy="50" r="11" />
-    </svg>
-  );
-}
-
-function Arches() {
-  return (
-    <svg viewBox="0 0 180 80" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-      {[8, 66, 124].map((x) => (
-        <path key={x} d={`M${x} 76 V40 a22 22 0 1 1 48 0 V76 M${x + 8} 76 V42 a14 14 0 1 1 32 0 V76`} />
-      ))}
-    </svg>
-  );
-}
-
-export function Banknote({ note }: { note: Note }) {
-  const tilt = useTilt<HTMLDivElement>(8);
-  const [back, setBack] = useState(false);
-  const toggle = () => setBack((b) => !b);
-  const style = { "--c1": note.from, "--c2": note.to } as CSSProperties;
-  return (
-    <div className="dc-note" style={style} {...tilt} role="button" tabIndex={0}
-      aria-label={`${note.value} dirham note, press to flip`}
-      onClick={toggle} onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && toggle()}>
-      <div className={"dc-note-in" + (back ? " flip" : "")}>
-        <div className="dc-face dc-front">
-          <header><b>BANK AL-MAGHRIB</b><i lang="ar">{AR_BAM}</i></header>
-          <div className="dc-val">{note.value}<small>DIRHAMS</small></div>
-          <div className="dc-medal"><Star size={70} /></div>
-          <div className="dc-thread" />
-          <footer><span>{note.value}A 4710 8362</span><span lang="ar">{AR_DIRHAM}</span></footer>
-        </div>
-        <div className="dc-face dc-back">
-          <header><b>RABAT</b><i lang="ar">{AR_KINGDOM}</i></header>
-          <div className="dc-arches"><Arches /></div>
-          <div className="dc-val dc-val-sm">{note.value}</div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export function CoinView({ coin }: { coin: Coin }) {
-  const style = { "--d": `${coin.size}px`, "--ring": coin.ring, "--core": coin.core } as CSSProperties;
-  return (
-    <div className="dc-coin" style={style} aria-label={`${coin.value} dirham coin`}>
-      <div className="dc-coin-in">
-        {Array.from({ length: 7 }, (_, i) => (
-          <i key={i} className="dc-edge" style={{ transform: `translateZ(${i - 3}px)` }} />
-        ))}
-        <div className="dc-cface" style={{ transform: "translateZ(4px)" }}>
-          <div className="dc-core"><b>{coin.value}</b><small>DH</small><span lang="ar">{AR_DIRHAM}</span></div>
-        </div>
-        <div className="dc-cface" style={{ transform: "rotateY(180deg) translateZ(4px)" }}>
-          <div className="dc-core"><Star size={coin.size * 0.36} /><span lang="ar">{AR_KINGDOM}</span></div>
-        </div>
-      </div>
-    </div>
-  );
 }
 
 export function BankCard({ bank, active, onPick }: { bank: Bank; active: boolean; onPick: () => void }) {

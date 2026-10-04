@@ -1,7 +1,8 @@
 "use client";
 
+import "./profile.css";
 import { useEffect, useRef, useState } from "react";
-import { Camera, Check, Copy, Trash2 } from "lucide-react";
+import { Camera, Check, Copy, Eye, EyeOff, Trash2 } from "lucide-react";
 import AppShell from "@/components/AppShell";
 import Avatar from "@/components/Avatar";
 import { api, Me, Profile } from "@/lib/api";
@@ -9,19 +10,47 @@ import { uploadMedia } from "@/lib/media";
 import { clearAvatar, setAvatar } from "@/lib/mediaApi";
 import { dateOnly, delay } from "@/lib/format";
 
-const strengthOf = (p: string) => {
-  let s = 0;
-  if (p.length >= 8) s++;
-  if (p.length >= 12) s++;
-  if (/[A-Z]/.test(p) && /[a-z]/.test(p)) s++;
-  if (/\d/.test(p)) s++;
-  if (/[^A-Za-z0-9]/.test(p)) s++;
-  return Math.min(s, 4);
-};
 const STRENGTH_LABEL = ["Too short", "Weak", "Fair", "Good", "Strong"];
 const STRENGTH_COLOR = ["#ef7480", "#ef7480", "#e0b04a", "#7c6df0", "#5cc9a7"];
 
+const rulesOf = (p: string): [string, boolean][] => [
+  ["At least 8 characters", p.length >= 8],
+  ["Upper and lower case letters", /[A-Z]/.test(p) && /[a-z]/.test(p)],
+  ["A number", /\d/.test(p)],
+  ["A symbol, like ! or #", /[^A-Za-z0-9]/.test(p)],
+];
+
+const strengthOf = (p: string) => (p.length < 8 ? 0 : Math.min(rulesOf(p).filter(([, ok]) => ok).length, 4));
+
 type Note = { ok: boolean; text: string } | null;
+
+function Feedback({ note }: { note: Note }) {
+  if (!note) return null;
+  return (
+    <p className="pf-msg" style={{ color: note.ok ? "var(--ok)" : "var(--err)" }}>
+      {note.ok && <Check size={14} />}
+      {note.text}
+    </p>
+  );
+}
+
+function PasswordField({ label, value, onChange, autoComplete, minLength }: {
+  label: string; value: string; onChange: (v: string) => void; autoComplete: string; minLength?: number;
+}) {
+  const [show, setShow] = useState(false);
+  return (
+    <div>
+      <label className="label">{label}</label>
+      <div className="pf-pass">
+        <input className="input" type={show ? "text" : "password"} required minLength={minLength}
+          autoComplete={autoComplete} value={value} onChange={(e) => onChange(e.target.value)} />
+        <button type="button" onClick={() => setShow((s) => !s)} aria-label={show ? "Hide password" : "Show password"}>
+          {show ? <EyeOff size={16} strokeWidth={1.6} /> : <Eye size={16} strokeWidth={1.6} />}
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export default function ProfilePage() {
   const [me, setMe] = useState<Me | null>(null);
@@ -84,7 +113,7 @@ export default function ProfilePage() {
       const p = await api.updateProfile({ fullName: form.fullName.trim(), phone: form.phone.trim() });
       setProfile(p);
       setMe((m) => (m ? { ...m, fullName: p.fullName } : m));
-      setMsg({ ok: true, text: "Profile updated." });
+      setMsg({ ok: true, text: "Saved." });
     } catch (err) {
       setMsg({ ok: false, text: err instanceof Error ? err.message : "Error" });
     } finally {
@@ -118,102 +147,133 @@ export default function ProfilePage() {
     setTimeout(() => setCopied(false), 1500);
   }
 
-  const score = strengthOf(pw.next);
   const name = profile?.fullName ?? me?.fullName ?? "";
+  const dirty = form.fullName.trim() !== (profile?.fullName ?? "") || form.phone.trim() !== (profile?.phone ?? "");
+  const score = strengthOf(pw.next);
 
   return (
     <AppShell>
-      <div className="rise">
-        <p className="label">Profile</p>
+      <header className="rise">
+        <p className="label">Account</p>
         <h1 className="serif mt-2 text-4xl">Profile & security</h1>
-      </div>
+        <p className="mt-2 max-w-lg text-sm text-[var(--muted)]">Your details, your photo and your password. Changes apply right away.</p>
+      </header>
 
-      <section className="glow-card rise mt-8 p-7" style={delay(1)}>
-        <div className="flex flex-wrap items-center gap-6">
-          <div className="group relative">
-            <Avatar name={name} url={me?.avatarUrl} size={96} />
-            <button
-              onClick={() => fileRef.current?.click()}
-              disabled={uploading}
-              className="absolute inset-0 flex flex-col items-center justify-center rounded-full bg-black/55 text-xs opacity-0 transition group-hover:opacity-100 focus:opacity-100"
-              aria-label="Change photo"
-            >
-              {uploading ? `${Math.round(progress * 100)}%` : <Camera size={20} strokeWidth={1.5} />}
+      <div className="pf mt-8">
+        <aside className="pf-id card rise" style={delay(1)}>
+          <div className="pf-ava">
+            <Avatar name={name} url={me?.avatarUrl} size={112} />
+            <button type="button" className="pf-cam" onClick={() => fileRef.current?.click()} disabled={uploading}
+              aria-label={me?.avatarUrl ? "Change photo" : "Add a photo"}>
+              {uploading ? `${Math.round(progress * 100)}%` : <Camera size={15} strokeWidth={1.7} />}
             </button>
             <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" hidden onChange={(e) => onPick(e.target.files?.[0])} />
           </div>
 
-          <div className="min-w-0 flex-1">
-            <p className="serif truncate text-2xl">{name || " "}</p>
-            <p className="mt-1 truncate text-sm text-[var(--muted)]">{profile?.email}</p>
-            <p className="mt-1 text-xs text-[var(--muted)]">{profile ? `Client since ${dateOnly(profile.createdAt)}` : " "}</p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              <button onClick={() => fileRef.current?.click()} disabled={uploading} className="btn btn-ghost flex items-center gap-2 !py-2 text-xs">
-                <Camera size={14} strokeWidth={1.6} /> {me?.avatarUrl ? "Change photo" : "Add a photo"}
-              </button>
-              {me?.avatarUrl && (
-                <button onClick={removeAvatar} disabled={uploading} className="btn btn-ghost flex items-center gap-2 !py-2 text-xs">
-                  <Trash2 size={14} strokeWidth={1.6} /> Remove
-                </button>
-              )}
-            </div>
-            {avatarMsg && <p className={`mt-3 text-xs ${avatarMsg.ok ? "text-[var(--ok)]" : "text-[var(--err)]"}`}>{avatarMsg.text}</p>}
-          </div>
+          <p className="pf-name serif">{name || " "}</p>
+          <p className="pf-mail">{profile?.email}</p>
 
-          <div className="text-right">
-            <p className="label">Account number</p>
-            <button onClick={copy} className="mt-1 flex items-center gap-2 text-sm tracking-wide hover:text-[#a89ff5]">
-              {me?.accountNumber ?? "-"}
-              {copied ? <Check size={14} /> : <Copy size={14} />}
+          {me?.avatarUrl && (
+            <button type="button" className="pf-link" onClick={removeAvatar} disabled={uploading}>
+              <Trash2 size={13} strokeWidth={1.6} /> Remove photo
             </button>
-          </div>
-        </div>
-      </section>
+          )}
+          <Feedback note={avatarMsg} />
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-2">
-        <form onSubmit={save} className="rise card space-y-5 p-6" style={delay(2)}>
-          <p className="text-sm">Personal information</p>
-          <div>
-            <label className="label">Full name</label>
-            <input className="input mt-2" required maxLength={80} value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} />
-          </div>
-          <div>
-            <label className="label">Email</label>
-            <input className="input mt-2 opacity-60" disabled value={profile?.email ?? ""} />
-          </div>
-          <div>
-            <label className="label">Phone</label>
-            <input className="input mt-2" placeholder="+212 6 00 00 00 00" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
-          </div>
-          {msg && <p className={`text-sm ${msg.ok ? "text-[var(--ok)]" : "text-[var(--err)]"}`}>{msg.text}</p>}
-          <button disabled={saving} className="btn btn-primary">{saving ? "Saving..." : "Save changes"}</button>
-        </form>
+          <dl className="pf-facts">
+            <div>
+              <dt>Account number</dt>
+              <dd>
+                <button type="button" className="pf-copy" onClick={copy}>
+                  {me?.accountNumber ?? "-"}
+                  {copied ? <Check size={14} /> : <Copy size={14} />}
+                </button>
+              </dd>
+            </div>
+            <div>
+              <dt>Client since</dt>
+              <dd>{profile ? dateOnly(profile.createdAt) : " "}</dd>
+            </div>
+          </dl>
+        </aside>
 
-        <form onSubmit={changePw} className="rise card space-y-5 p-6" style={delay(3)}>
-          <p className="text-sm">Change password</p>
-          <div>
-            <label className="label">Current password</label>
-            <input className="input mt-2" type="password" required autoComplete="current-password" value={pw.current} onChange={(e) => setPw({ ...pw, current: e.target.value })} />
-          </div>
-          <div>
-            <label className="label">New password</label>
-            <input className="input mt-2" type="password" required minLength={8} autoComplete="new-password" value={pw.next} onChange={(e) => setPw({ ...pw, next: e.target.value })} />
-            {pw.next && (
-              <div className="mt-3">
-                <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
-                  <div className="h-full rounded-full" style={{ width: `${((score + 1) / 5) * 100}%`, background: STRENGTH_COLOR[score], transition: "width 0.4s, background 0.4s" }} />
-                </div>
-                <p className="mt-1.5 text-xs" style={{ color: STRENGTH_COLOR[score] }}>{STRENGTH_LABEL[score]}</p>
+        <div className="pf-main">
+          <form onSubmit={save} className="card pf-section rise" style={delay(2)}>
+            <div className="pf-head">
+              <h2 className="serif">Personal details</h2>
+              <p>This is how other members see you in Messages.</p>
+            </div>
+            <div className="pf-fields two">
+              <div>
+                <label className="label">Full name</label>
+                <input className="input mt-2" required maxLength={80} value={form.fullName}
+                  onChange={(e) => setForm({ ...form, fullName: e.target.value })} />
               </div>
+              <div>
+                <label className="label">Phone</label>
+                <input className="input mt-2" placeholder="+212 6 00 00 00 00" value={form.phone}
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+                <p className="pf-hint">Optional.</p>
+              </div>
+            </div>
+            <div className="pf-fields">
+              <div>
+                <label className="label">Email</label>
+                <input className="input mt-2 opacity-60" disabled value={profile?.email ?? ""} />
+                <p className="pf-hint">Your email is your sign-in, it can&apos;t be changed here.</p>
+              </div>
+            </div>
+            <div className="pf-foot">
+              <Feedback note={msg} />
+              <button disabled={saving || !dirty} className="btn btn-primary">{saving ? "Saving..." : "Save changes"}</button>
+            </div>
+          </form>
+
+          <form onSubmit={changePw} className="card pf-section rise" style={delay(3)}>
+            <div className="pf-head">
+              <h2 className="serif">Password</h2>
+              <p>Pick something you don&apos;t use anywhere else.</p>
+            </div>
+            <div className="pf-fields">
+              <PasswordField label="Current password" value={pw.current} autoComplete="current-password"
+                onChange={(v) => setPw({ ...pw, current: v })} />
+              <div className="pf-fields two" style={{ marginTop: 0 }}>
+                <div>
+                  <PasswordField label="New password" value={pw.next} autoComplete="new-password" minLength={8}
+                    onChange={(v) => setPw({ ...pw, next: v })} />
+                </div>
+                <PasswordField label="Confirm new password" value={pw.confirm} autoComplete="new-password"
+                  onChange={(v) => setPw({ ...pw, confirm: v })} />
+              </div>
+            </div>
+
+            {pw.next && (
+              <>
+                <div className="pf-meter" aria-hidden="true">
+                  {[0, 1, 2, 3].map((i) => (
+                    <i key={i} style={{ background: i < Math.max(score, 1) ? STRENGTH_COLOR[score] : undefined }} />
+                  ))}
+                </div>
+                <p className="pf-hint" style={{ color: STRENGTH_COLOR[score] }}>{STRENGTH_LABEL[score]}</p>
+              </>
             )}
-          </div>
-          <div>
-            <label className="label">Confirm new password</label>
-            <input className="input mt-2" type="password" required autoComplete="new-password" value={pw.confirm} onChange={(e) => setPw({ ...pw, confirm: e.target.value })} />
-          </div>
-          {pwMsg && <p className={`text-sm ${pwMsg.ok ? "text-[var(--ok)]" : "text-[var(--err)]"}`}>{pwMsg.text}</p>}
-          <button disabled={pwBusy} className="btn btn-primary">{pwBusy ? "Updating..." : "Update password"}</button>
-        </form>
+            <ul className="pf-rules">
+              {rulesOf(pw.next).map(([text, ok]) => (
+                <li key={text} className={ok ? "ok" : ""}>
+                  {ok ? <Check size={13} strokeWidth={2} /> : <span className="dot" />}
+                  {text}
+                </li>
+              ))}
+            </ul>
+
+            <div className="pf-foot">
+              <Feedback note={pwMsg} />
+              <button disabled={pwBusy || !pw.current || !pw.next || !pw.confirm} className="btn btn-primary">
+                {pwBusy ? "Updating..." : "Update password"}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </AppShell>
   );
