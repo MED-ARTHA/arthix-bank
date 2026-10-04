@@ -72,7 +72,7 @@ export default function Assistant() {
               onKeyDown={(e) => e.key === "Enter" && ask(text)} />
             <button onClick={() => ask(text)} disabled={busy || !text.trim()} aria-label="Send"><Send size={16} /></button>
           </div>
-          <p className="as-note">AI can make mistakes. Demo app, not financial advice.</p>
+          <p className="as-note">Demo app. Answers are informational, not financial advice.</p>
         </section>
       )}
     </>
