@@ -8,12 +8,14 @@ export default function Card3D() {
   const stageRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const glareRef = useRef<HTMLDivElement>(null);
+  const shadowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const stage = stageRef.current;
     const card = cardRef.current;
     const glare = glareRef.current;
-    if (!stage || !card || !glare) return;
+    const shadow = shadowRef.current;
+    if (!stage || !card || !glare || !shadow) return;
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const AUTO = reduce ? 0 : 0.32; // degrees per frame (60fps)
@@ -34,6 +36,9 @@ export default function Card3D() {
       const facing = Math.cos(rad);
       glare.style.opacity = String(Math.max(0, facing) * 0.9);
       glare.style.transform = `translateX(${(Math.sin(rad) * 70).toFixed(1)}%)`;
+      const w = 0.28 + Math.abs(Math.cos(rad)) * 0.72;
+      shadow.style.transform = `translateX(${(Math.sin(rad) * 14).toFixed(1)}%) scaleX(${w.toFixed(3)})`;
+      shadow.style.opacity = String(0.55 + Math.abs(Math.cos(rad)) * 0.45);
     };
 
     const tick = (t: number) => {
@@ -119,7 +124,7 @@ export default function Card3D() {
             <p className="c3d-legal">Issued by Arthix. Demo environment, no real funds.</p>
           </div>
         </div>
-        <div className="c3d-shadow" />
+        <div ref={shadowRef} className="c3d-shadow" />
       </div>
     </div>
   );

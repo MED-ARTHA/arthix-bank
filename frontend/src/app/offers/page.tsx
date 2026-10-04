@@ -5,7 +5,8 @@ import Link from "next/link";
 import AppShell from "@/components/AppShell";
 import { Bars, Donut } from "@/components/Charts";
 import Icon from "@/components/Icon";
-import Photo from "@/components/Photo";
+import Select from "@/components/Select";
+import "./offers.css";
 import { api, Offer } from "@/lib/api";
 import { delay, money, plain } from "@/lib/format";
 
@@ -140,6 +141,9 @@ function Savings() {
 
 const RATES: Record<string, number> = { MAD: 1, EUR: 0.092, USD: 0.1, GBP: 0.079, CHF: 0.088, AED: 0.367 };
 
+const CUR: Record<string, string> = { MAD: "Moroccan dirham", EUR: "Euro", USD: "US dollar", GBP: "British pound", CHF: "Swiss franc", AED: "UAE dirham" };
+const curOptions = Object.keys(RATES).map((c) => ({ value: c, label: c, hint: CUR[c] }));
+
 function Exchange() {
   const [amount, setAmount] = useState(1000);
   const [from, setFrom] = useState("MAD");
@@ -156,18 +160,14 @@ function Exchange() {
         <div className="flex items-end gap-3">
           <div className="flex-1">
             <label className="label">From</label>
-            <select className="input mt-2" value={from} onChange={(e) => setFrom(e.target.value)}>
-              {Object.keys(RATES).map((c) => <option key={c}>{c}</option>)}
-            </select>
+            <Select value={from} onChange={setFrom} options={curOptions} searchable={false} />
           </div>
           <button onClick={() => { setFrom(to); setTo(from); }} className="btn btn-ghost !px-3" aria-label="Swap">
             <Icon name="swap" size={16} />
           </button>
           <div className="flex-1">
             <label className="label">To</label>
-            <select className="input mt-2" value={to} onChange={(e) => setTo(e.target.value)}>
-              {Object.keys(RATES).map((c) => <option key={c}>{c}</option>)}
-            </select>
+            <Select value={to} onChange={setTo} options={curOptions} searchable={false} />
           </div>
         </div>
         <div className="glow-card p-5">
@@ -214,33 +214,38 @@ export default function OffersPage() {
         <h1 className="serif mt-2 text-4xl">Offers & tools</h1>
       </header>
 
-      <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-10">
+      <div className="of-grid">
         {offers.map((o, i) => {
           const t = o.title.toLowerCase();
           const tool: Tab | null = t.includes("credit") ? "loan" : t.includes("epargne") ? "savings" : t.includes("devise") ? "exchange" : null;
           const href = t.includes("paiement") || t.includes("cashback") ? "/payments" : t.includes("carte") ? "/deposit" : null;
-          const cta = "mt-5 inline-flex items-center gap-2 text-sm text-white transition hover:gap-3";
-          return (
-            <article key={o.title} className="rise card card-hover flex flex-col overflow-hidden" style={delay(i + 1)}>
-              <Photo src={imageFor(o.title)} className="h-40" />
-              <div className="flex flex-1 flex-col p-6">
-                <h3 className="serif text-xl">{o.title}</h3>
-                <p className="mt-2 flex-1 text-sm leading-relaxed text-[var(--muted)]">{o.description}</p>
-                {tool && (
-                  <button onClick={() => go(tool)} className={cta}>
-                    Try the simulator <Icon name="arrow" size={15} />
-                  </button>
-                )}
-                {href && (
-                  <Link href={href} className={cta}>
-                    Get started <Icon name="arrow" size={15} />
-                  </Link>
-                )}
+          const inner = (
+            <>
+              <div className="of-media">
+                <div style={{ backgroundImage: `url(${imageFor(o.title)})` }} />
+                <span className="of-badge">{tool ? "Simulator" : "Service"}</span>
+                <span className="of-num">{String(i + 1).padStart(2, "0")}</span>
               </div>
-            </article>
+              <div className="of-body">
+                <h3>{o.title}</h3>
+                <p>{o.description}</p>
+                <div className="of-cta">
+                  <span>{tool ? "Try the simulator" : "Get started"}</span>
+                  <span className="of-arrow"><Icon name="arrow" size={15} /></span>
+                </div>
+              </div>
+            </>
+          );
+          return tool ? (
+            <button key={o.title} onClick={() => go(tool)} className="of-card rise" style={delay(i + 1)}>{inner}</button>
+          ) : (
+            <Link key={o.title} href={href ?? "/payments"} className="of-card rise" style={delay(i + 1)}>{inner}</Link>
           );
         })}
       </div>
+      </div>
+
 
       <section id="tools" className="rise card mt-12 scroll-mt-6 p-6 sm:p-8" style={delay(8)}>
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4">

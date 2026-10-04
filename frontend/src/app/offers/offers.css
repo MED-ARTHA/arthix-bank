@@ -1,0 +1,25 @@
+.of-grid { display: grid; gap: 22px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+.of-card {
+  position: relative; display: flex; flex-direction: column; overflow: hidden; border-radius: 18px; min-height: 380px; text-align: left;
+  border: 1px solid rgba(255,255,255,.09); background: #0b0b18; color: inherit;
+  transition: transform .45s cubic-bezier(.2,.8,.2,1), border-color .3s, box-shadow .45s;
+}
+.of-card:hover { transform: translateY(-6px); border-color: rgba(167,157,255,.45); box-shadow: 0 30px 60px -28px rgba(90,76,220,.6); }
+.of-media { position: relative; height: 200px; overflow: hidden; }
+.of-media > div { position: absolute; inset: 0; background-size: cover; background-position: center; transition: transform .9s cubic-bezier(.2,.8,.2,1); filter: saturate(1.05); }
+.of-card:hover .of-media > div { transform: scale(1.08); }
+.of-media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8,8,20,.15) 0%, rgba(11,11,24,.55) 60%, #0b0b18 100%); }
+.of-badge {
+  position: absolute; z-index: 2; left: 16px; top: 16px; padding: 6px 12px; border-radius: 999px; font-size: 10px; letter-spacing: .18em; text-transform: uppercase;
+  color: #e5e1ff; background: rgba(20,17,50,.65); border: 1px solid rgba(185,179,247,.35); backdrop-filter: blur(8px);
+}
+.of-num { position: absolute; z-index: 2; right: 18px; top: 12px; font-family: var(--font-serif, Georgia), serif; font-size: 34px; color: rgba(255,255,255,.18); }
+.of-body { position: relative; z-index: 2; display: flex; flex: 1; flex-direction: column; padding: 0 24px 22px; margin-top: -34px; }
+.of-body h3 { font-family: var(--font-serif, Georgia), serif; font-size: 23px; line-height: 1.2; color: #fff; }
+.of-body p { margin-top: 10px; flex: 1; font-size: 14px; line-height: 1.6; color: #9b9cb3; }
+.of-cta { margin-top: 18px; display: flex; align-items: center; justify-content: space-between; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.08); font-size: 13px; color: #fff; }
+.of-arrow {
+  display: flex; width: 34px; height: 34px; align-items: center; justify-content: center; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.18); transition: all .3s;
+}
+.of-card:hover .of-arrow { background: #7c6df0; border-color: #7c6df0; transform: translateX(3px) rotate(-45deg); }

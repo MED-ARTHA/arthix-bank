@@ -21,9 +21,28 @@ public class BankService {
 
     private static final List<ProviderDto> PROVIDERS = List.of(
         new ProviderDto("srm", "SRM (Eau & Electricite)", "BILLS"),
-        new ProviderDto("telecom", "Telecom / Internet", "BILLS"),
+        new ProviderDto("lydec", "Lydec (Casablanca)", "BILLS"),
+        new ProviderDto("redal", "Redal (Rabat)", "BILLS"),
+        new ProviderDto("amendis", "Amendis (Tanger, Tetouan)", "BILLS"),
+        new ProviderDto("gas", "Gaz butane", "BILLS"),
+        new ProviderDto("telecom", "Telecom / Internet", "TELECOM"),
+        new ProviderDto("iam", "Maroc Telecom", "TELECOM"),
+        new ProviderDto("orange", "Orange Maroc", "TELECOM"),
+        new ProviderDto("inwi", "inwi", "TELECOM"),
         new ProviderDto("school-private", "Ecole privee", "SCHOOLS"),
-        new ProviderDto("university", "Universite", "SCHOOLS")
+        new ProviderDto("university", "Universite", "SCHOOLS"),
+        new ProviderDto("school-mission", "Mission / Ecole etrangere", "SCHOOLS"),
+        new ProviderDto("training", "Centre de formation", "SCHOOLS"),
+        new ProviderDto("insurance-car", "Assurance auto", "INSURANCE"),
+        new ProviderDto("insurance-health", "Assurance sante / Mutuelle", "INSURANCE"),
+        new ProviderDto("insurance-home", "Assurance habitation", "INSURANCE"),
+        new ProviderDto("tax-dgi", "Impots (DGI)", "TAXES"),
+        new ProviderDto("tax-vignette", "Vignette automobile", "TAXES"),
+        new ProviderDto("tax-commune", "Taxes communales", "TAXES"),
+        new ProviderDto("cnss", "CNSS", "TAXES"),
+        new ProviderDto("transport-train", "ONCF (Train)", "TRANSPORT"),
+        new ProviderDto("transport-tram", "Tramway / Bus", "TRANSPORT"),
+        new ProviderDto("highway", "Autoroutes du Maroc", "TRANSPORT")
     );
 
     private static final List<OfferDto> OFFERS = List.of(
