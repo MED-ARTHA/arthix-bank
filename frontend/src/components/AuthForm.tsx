@@ -4,9 +4,11 @@ import "./auth.css";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowDownLeft, ArrowRight, ArrowUpRight, Eye, EyeOff, MailCheck, Receipt, ShieldCheck } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, MailCheck, ShieldCheck } from "lucide-react";
 import Logo from "@/components/Logo";
+import { Cormorant_Garamond } from "next/font/google";
 import Card3D from "@/components/Card3D";
+import PartnerStrip from "@/components/PartnerStrip";
 import { api } from "@/lib/api";
 
 const strengthOf = (p: string) => {
@@ -19,6 +21,8 @@ const strengthOf = (p: string) => {
 };
 const METER = ["#ef7480", "#ef7480", "#e0b04a", "#7c6df0", "#5cc9a7"];
 const COOLDOWN = 45;
+
+const italian = Cormorant_Garamond({ subsets: ["latin"], weight: ["500", "600"], style: ["italic", "normal"], variable: "--font-italian" });
 
 export default function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const router = useRouter();
@@ -100,32 +104,19 @@ export default function AuthForm({ mode }: { mode: "login" | "signup" }) {
         <div className="aurora" aria-hidden="true"><i /><i /></div>
         <Logo height={110} />
 
-        <div className="auth-copy">
-          <h2>Your money, always in motion.</h2>
-          <p>Instant transfers, clear savings goals and a receipt for every operation, in one calm place.</p>
+        <div className={"auth-copy " + italian.variable}>
+          <span className="ac-eyebrow" style={iv(0)}><i />Private banking</span>
+          <h2 className="ac-title">
+            <span className="ac-line"><span style={iv(1)}>Your money,</span></span>
+            <span className="ac-line ac-em"><span style={iv(2)}>always in motion.</span></span>
+          </h2>
+          <p className="ac-sub" style={iv(3)}>Instant transfers, clear savings goals and a receipt for every operation, in one calm place.</p>
         </div>
 
         <div className="stage" aria-hidden="true">
           <Card3D />
 
-          <div className="feed">
-            <div className="feed-row" style={iv(0)}>
-              <span className="feed-ico"><ArrowDownLeft size={15} strokeWidth={1.6} /></span>
-              <div>Salary<small>Today, 09:12</small></div>
-              <b className="pos">+8 500,00</b>
-            </div>
-            <div className="feed-row" style={iv(1)}>
-              <span className="feed-ico"><Receipt size={15} strokeWidth={1.6} /></span>
-              <div>SRM, electricity<small>Yesterday</small></div>
-              <b>-420,00</b>
-            </div>
-            <div className="feed-row" style={iv(2)}>
-              <span className="feed-ico"><ArrowUpRight size={15} strokeWidth={1.6} /></span>
-              <div>Transfer to Sara B.<small>Monday</small></div>
-              <b>-250,00</b>
-            </div>
-          </div>
-        </div>
+          <PartnerStrip /></div>
       </aside>
 
       <section className="auth-panel">
