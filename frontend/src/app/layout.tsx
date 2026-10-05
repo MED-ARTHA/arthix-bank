@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Newsreader } from "next/font/google";
 import "./globals.css";
+import "./lights.css";
 import SidebarToggle from "@/components/SidebarToggle";
 
 const sans = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });

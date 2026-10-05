@@ -1,0 +1,66 @@
+/*
+  Arthix lighting: soft colored light coming from the edges of the screen, glass cards on top.
+  Tune the colors and the strength with the variables below.
+*/
+:root {
+  --lt-magenta: 150, 40, 210;
+  --lt-violet: 94, 70, 235;
+  --lt-teal: 14, 150, 170;
+  --lt-blue: 30, 80, 200;
+  --lt-strength: 1; /* 0 = off, 1 = default, 1.4 = intense */
+}
+
+html { background: #03040b; }
+
+html body::before {
+  content: "";
+  position: fixed;
+  inset: -12%;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  box-shadow: none;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(38vmax 48vmax at 0% 40%, rgba(var(--lt-magenta), calc(0.55 * var(--lt-strength))), transparent 70%),
+    radial-gradient(34vmax 36vmax at 80% 42%, rgba(var(--lt-violet), calc(0.5 * var(--lt-strength))), transparent 70%),
+    radial-gradient(42vmax 32vmax at 100% 100%, rgba(var(--lt-teal), calc(0.55 * var(--lt-strength))), transparent 70%),
+    radial-gradient(30vmax 24vmax at 28% 106%, rgba(var(--lt-blue), calc(0.3 * var(--lt-strength))), transparent 70%);
+  will-change: transform;
+  animation: ltDrift 30s ease-in-out infinite alternate;
+}
+@keyframes ltDrift {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(-2.5%, 2%, 0) scale(1.06); }
+}
+
+/* glass cards: they pick up a little of the light behind them */
+.card {
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.02));
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(14px) saturate(125%);
+  -webkit-backdrop-filter: blur(14px) saturate(125%);
+}
+.glow-card {
+  background: linear-gradient(150deg, rgba(124, 109, 240, 0.22), rgba(14, 150, 170, 0.08) 70%, rgba(255, 255, 255, 0.02));
+  border-color: rgba(167, 157, 255, 0.3);
+  box-shadow: 0 30px 80px -40px rgba(100, 80, 240, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px) saturate(130%);
+}
+
+/* glass sidebar, so the light shows through it */
+aside.fixed {
+  background: rgba(5, 6, 16, 0.5) !important;
+  backdrop-filter: blur(22px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(140%) !important;
+}
+
+/* login showcase uses the same palette */
+.auth-showcase .aurora i:nth-child(1) { background: radial-gradient(circle, rgba(var(--lt-magenta), 0.6), transparent 65%); }
+.auth-showcase .aurora i:nth-child(2) { background: radial-gradient(circle, rgba(var(--lt-teal), 0.55), transparent 65%); }
+
+@media (prefers-reduced-motion: reduce) {
+  html body::before { animation: none; }
+}
