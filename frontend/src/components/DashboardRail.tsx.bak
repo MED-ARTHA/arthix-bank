@@ -1,35 +1,31 @@
 "use client";
 
 import "./dashboard-rail.css";
-import { useState, type CSSProperties } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Bus, GraduationCap, Landmark, Shield, Smartphone, Zap, type LucideIcon } from "lucide-react";
-import CardScene from "@/components/CardScene";
 import { BANKS, type Bank } from "@/lib/moroccan";
 
 const PAY: { label: string; icon: LucideIcon }[] = [
   { label: "Telecom", icon: Smartphone },
-  { label: "Utilities", icon: Zap },
+  { label: "Electricity & water", icon: Zap },
   { label: "Taxes", icon: Landmark },
   { label: "Schools", icon: GraduationCap },
   { label: "Insurance", icon: Shield },
   { label: "Transport", icon: Bus },
 ];
 
-function BankTile({ bank }: { bank: Bank }) {
+function LogoTile({ bank }: { bank: Bank }) {
   const [broken, setBroken] = useState(false);
   return (
     <li>
-      <Link href="/discover" className="rail-bank" title={bank.name} style={{ "--c1": bank.from } as CSSProperties}>
-        <span className="rail-bank-logo">
-          {bank.logo && !broken ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={bank.logo} alt="" draggable={false} onError={() => setBroken(true)} />
-          ) : (
-            <b>{bank.name.slice(0, 2)}</b>
-          )}
-        </span>
-        <span className="rail-bank-name">{bank.name}</span>
+      <Link href="/discover" title={bank.name} aria-label={bank.name}>
+        {bank.logo && !broken ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={bank.logo} alt="" draggable={false} onError={() => setBroken(true)} />
+        ) : (
+          <b>{bank.name}</b>
+        )}
       </Link>
     </li>
   );
@@ -39,8 +35,6 @@ export default function DashboardRail() {
   const banks = BANKS.filter((b) => b.logo);
   return (
     <aside className="rail">
-      <CardScene />
-
       <section className="card rail-card rise">
         <header>
           <h3>Pay & top up</h3>
@@ -61,8 +55,8 @@ export default function DashboardRail() {
           <h3>Moroccan banks</h3>
           <Link href="/discover">Discover</Link>
         </header>
-        <ul className="rail-banks">
-          {banks.map((b) => <BankTile key={b.id} bank={b} />)}
+        <ul className="rail-logos">
+          {banks.map((b) => <LogoTile key={b.id} bank={b} />)}
         </ul>
       </section>
     </aside>

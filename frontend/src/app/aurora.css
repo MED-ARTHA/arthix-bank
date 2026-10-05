@@ -3,6 +3,8 @@
    Loaded after globals.css and lights.css.
    ========================================================= */
 :root {
+  /* white silhouettes for bank logos. Use "none" to show their original colours. */
+  --logo-filter: drop-shadow(0 0 0.5px rgba(255, 255, 255, 0.85)) drop-shadow(0 0 7px rgba(255, 255, 255, 0.22));
   --page-max: 1360px;                       /* lower it (e.g. 1600px) to cap the content on huge screens */
   --page-pad: clamp(20px, 3vw, 48px);
 

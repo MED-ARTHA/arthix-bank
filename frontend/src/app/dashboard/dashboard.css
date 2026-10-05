@@ -36,3 +36,19 @@
 .dash-split li span { display: flex; align-items: center; gap: 8px; color: #8b8ca3; }
 .dash-split li i { width: 8px; height: 8px; border-radius: 50%; }
 .dash-split li b { font-weight: 400; }
+/* ---- hero card fit ---- */
+.dash .ov-stack { width: min(380px, 92%); }
+.dash .ov-foot { gap: 10px; font-size: 11px; letter-spacing: 0.08em; white-space: nowrap; }
+.dash .ov-foot span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.dash .ov-foot span:last-child { flex-shrink: 0; }
+.dash .ov-o1 { width: 64px; height: 64px; right: -16px; top: -26px; }
+.dash .ov-o2 { width: 36px; height: 36px; left: -14px; bottom: -16px; }
+
+/* ---- hero without the card ---- */
+.dash-main .ov { grid-template-columns: 1fr; min-height: 0; padding: 8px 0 0; }
+.dash-main .ov-scene, .dash-main .ov-bg { display: none; }
+
+/* ---- wider rail ---- */
+@media (min-width: 1440px) {
+  .dash { grid-template-columns: minmax(0, 1fr) 400px; }
+}

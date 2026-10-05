@@ -179,21 +179,20 @@ function useTilt<T extends HTMLElement>(max = 10) {
 }
 
 export function BankCard({ bank, active, onPick }: { bank: Bank; active: boolean; onPick: () => void }) {
-  const tilt = useTilt<HTMLButtonElement>(8);
-  const [broken, setBroken] = useState(false);
+  const tilt = useTilt<HTMLButtonElement>(9);
+  const [noLogo, setNoLogo] = useState(false);
   const style = { "--c1": bank.from, "--c2": bank.to } as CSSProperties;
   return (
-    <button type="button" className={"dc-bank" + (active ? " on" : "")} style={style} {...tilt} onClick={onPick} aria-pressed={active}>
+    <button type="button" className={"dc-bank" + (active ? " on" : "")} style={style} {...tilt} onClick={onPick}>
       <div className="dc-bank-in">
-        <div className="dc-bank-logo">
-          {bank.logo && !broken ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={bank.logo} alt={bank.name} draggable={false} onError={() => setBroken(true)} />
-          ) : (
-            <b>{bank.name}</b>
-          )}
-        </div>
-        <div className="dc-bank-meta"><span>{bank.name}</span><small>{bank.kind}</small></div>
+        <div className="dc-bank-top"><span>{bank.kind}</span><i /></div>
+        {noLogo ? (
+          <b className="dc-word">{bank.name}</b>
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img className="dc-logo" src={`/banks/${bank.id}.svg`} alt={bank.name} onError={() => setNoLogo(true)} />
+        )}
+        <div className="dc-chip" />
       </div>
     </button>
   );

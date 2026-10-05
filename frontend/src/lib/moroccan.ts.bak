@@ -24,19 +24,16 @@ export const COINS: Coin[] = [
   { value: 10, size: 140, ring: GOLD, core: SILVER.core, fact: "The biggest everyday coin: a golden ring around a silver core. The 2023 reverse shows a cable-stayed bridge and a high-speed train." },
 ];
 
-/** Banks with a "logo" are shown in the app. Add a logo file in public/banks and a "logo" field to show another one. */
 export const BANKS: Bank[] = [
-  { id: "attijariwafa", name: "Attijariwafa bank", kind: "Private", logo: "/banks/clean/attijariwafabank.png", from: "#e8952a", to: "#6b2a0b", blurb: "One of the largest banks in the country, with a dense branch network and operations across Africa." },
-  { id: "banque-populaire", name: "Banque Populaire", kind: "Cooperative", logo: "/banks/clean/bankpop.png", from: "#ee7a2c", to: "#13408a", blurb: "A group with cooperative roots and a network of regional Banques Populaires across the kingdom." },
-  { id: "bank-of-africa", name: "Bank of Africa", kind: "Private", logo: "/banks/clean/bankofafrika.png", from: "#2f9a55", to: "#0d3d24", blurb: "The group brand, present in Morocco and in other African countries." },
-  { id: "bmce", name: "BMCE Bank", kind: "Private", logo: "/banks/clean/BMCE.png", from: "#3aa356", to: "#14502a", blurb: "Banque Marocaine du Commerce Extérieur, the original name of the group that now operates as Bank of Africa." },
-  { id: "cih", name: "CIH Bank", kind: "Private", logo: "/banks/clean/cihbank.png", from: "#3b73d4", to: "#14275c", blurb: "Historically tied to housing and tourism financing, today a universal bank with a strong digital offer." },
-  { id: "credit-agricole", name: "Crédit Agricole du Maroc", kind: "Agricultural", logo: "/banks/clean/creditagr.png", from: "#4aa05a", to: "#1d4a2a", blurb: "Focused on agriculture and rural areas, and present in towns and villages across the country." },
-  // No logo file yet, so these are not displayed.
+  { id: "bank-al-maghrib", name: "Bank Al-Maghrib", kind: "Central bank", from: "#1c2b5a", to: "#0a1230", blurb: "Morocco's central bank. It issues the dirham and supervises the banking system. Founded in 1959." },
+  { id: "attijariwafa", name: "Attijariwafa bank", kind: "Private", from: "#e8952a", to: "#6b2a0b", blurb: "One of the largest banks in the country, with a dense branch network and operations across Africa." },
+  { id: "banque-populaire", name: "Banque Populaire", kind: "Cooperative", from: "#ee7a2c", to: "#13408a", blurb: "A group with cooperative roots and a network of regional Banques Populaires across the kingdom." },
+  { id: "bank-of-africa", name: "Bank of Africa", kind: "Private", from: "#2f9a55", to: "#0d3d24", blurb: "Known as BMCE Bank of Africa, with a strong presence in other African countries." },
+  { id: "cih", name: "CIH Bank", kind: "Private", from: "#3b73d4", to: "#14275c", blurb: "Historically tied to housing and tourism financing, today a universal bank with a strong digital offer." },
+  { id: "credit-agricole", name: "Crédit Agricole du Maroc", kind: "Agricultural", from: "#4aa05a", to: "#1d4a2a", blurb: "Focused on agriculture and rural areas, and present in towns and villages across the country." },
   { id: "bmci", name: "BMCI", kind: "Private", from: "#2a9a7a", to: "#0b3f33", blurb: "Part of the BNP Paribas group, serving individuals and companies." },
   { id: "credit-du-maroc", name: "Crédit du Maroc", kind: "Private", from: "#c9473d", to: "#541511", blurb: "A retail and corporate bank with branches nationwide." },
   { id: "al-barid-bank", name: "Al Barid Bank", kind: "Postal", from: "#e6c13a", to: "#2a4f9e", blurb: "The banking arm of the national postal group, reaching customers through post offices." },
-  { id: "bank-al-maghrib", name: "Bank Al-Maghrib", kind: "Central bank", from: "#1c2b5a", to: "#0a1230", blurb: "Morocco's central bank. It issues the dirham and supervises the banking system. Founded in 1959." },
 ];
 
 export const CULTURE = [

@@ -6,33 +6,108 @@
 .dc-tabs button:hover { color: #fff; }
 .dc-tabs button.on { color: #fff; background: #7c6df0; }
 
-.dc-grid { display: grid; gap: 40px 28px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
-.dc-grid-coins { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+.dc-grid { display: grid; gap: 56px 32px; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); }
+.dc-grid-coins { gap: 56px 24px; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
 .dc-grid-banks { gap: 22px; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
-.dc-item { display: grid; gap: 18px; justify-items: start; }
+.dc-item { position: relative; isolation: isolate; display: grid; gap: 18px; justify-items: start; }
 .dc-item-coin { justify-items: center; text-align: center; }
 .dc-item figcaption b { font-family: var(--font-serif, Georgia), serif; font-size: 20px; font-weight: 400; }
 .dc-item figcaption p { margin-top: 6px; font-size: 13px; line-height: 1.55; color: #9b9cb3; }
 .dc-item figcaption small { display: block; margin-top: 8px; font-size: 11px; color: #6d6e86; }
 
+/* a soft spotlight behind every object, so it reads as sitting on a surface */
+.dc-item::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -24px -12px auto;
+  height: 75%;
+  pointer-events: none;
+  background: radial-gradient(60% 60% at 50% 42%, rgba(124, 109, 240, 0.16), transparent 72%);
+}
+
 /* ---- 3D objects (real photos) ---- */
-.dc-stage { position: relative; perspective: 1000px; cursor: grab; user-select: none; touch-action: pan-y; }
+.dc-stage { position: relative; margin-bottom: 36px; perspective: 1100px; cursor: grab; user-select: none; touch-action: pan-y; }
 .dc-stage:active { cursor: grabbing; }
-.dc-stage::after { content: ""; position: absolute; left: 10%; right: 10%; bottom: -24px; height: 18px; border-radius: 50%; pointer-events: none;
-  background: radial-gradient(closest-side, rgba(0,0,0,.6), transparent); filter: blur(4px); }
-.dc-stage-note { width: min(340px, 100%); }
-.dc-stage-coin { width: var(--d); height: var(--d); }
+.dc-stage-note { width: min(420px, 100%); }
+.dc-stage-coin { width: calc(var(--d) * 1.35); height: calc(var(--d) * 1.35); }
 .dc-obj { position: relative; width: 100%; transform-style: preserve-3d; will-change: transform; }
 .dc-stage-note .dc-obj { aspect-ratio: var(--ratio); }
 .dc-coin-obj { height: 100%; }
-.dc-sheet { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; border-radius: 5px; pointer-events: none;
-  backface-visibility: hidden; box-shadow: 0 20px 30px -20px #000; }
-.dc-sheet-back { transform: rotateY(180deg); }
-.dc-edge { position: absolute; inset: 0; border-radius: 50%; background: var(--edge); filter: brightness(.7); }
-.dc-cface { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; scale: 1.05;
-  pointer-events: none; backface-visibility: hidden; }
 
-/* ---- bank card ---- */.dc-bank { display: block; width: 100%; aspect-ratio: 1.586; perspective: 900px; text-align: left; border-radius: 16px; transition: translate .25s; }
+/* Ground shadow, driven from JS every frame through --sx (offset), --sw (width) and --so (opacity).
+   A violet floor glow keeps it readable on the dark page, the dark layer is the contact shadow. */
+.dc-shadow {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: -34px;
+  height: 26px;
+  pointer-events: none;
+  opacity: var(--so, 0.7);
+  transform: translateX(var(--sx, 0px)) scaleX(var(--sw, 1));
+}
+.dc-shadow::before {
+  content: "";
+  position: absolute;
+  inset: -16px -12%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(124, 109, 240, 0.3), transparent);
+  filter: blur(10px);
+}
+.dc-shadow::after {
+  content: "";
+  position: absolute;
+  inset: 3px 4%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.55) 55%, transparent);
+  filter: blur(6px);
+}
+.dc-stage-coin .dc-shadow { left: 14%; right: 14%; }
+
+/* banknote: two printed faces, a few paper plies for the thickness, and a moving gloss */
+.dc-ply { position: absolute; inset: 0; border-radius: 5px; background: #d9d3c5; }
+.dc-sheet {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 5px;
+  object-fit: fill;
+  pointer-events: none;
+  backface-visibility: hidden;
+  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.35);
+}
+.dc-gloss {
+  position: absolute;
+  inset: 0;
+  border-radius: 5px;
+  pointer-events: none;
+  backface-visibility: hidden;
+  background: linear-gradient(
+    110deg,
+    transparent calc(var(--gl, 50%) - 24%),
+    rgba(255, 255, 255, 0.24) var(--gl, 50%),
+    transparent calc(var(--gl, 50%) + 24%)
+  );
+}
+
+/* coin: stacked discs for the rim, one photo per face */
+.dc-edge { position: absolute; inset: 0; border-radius: 50%; background: var(--edge); filter: brightness(0.7); }
+.dc-cface {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  scale: 1.05;
+  pointer-events: none;
+  backface-visibility: hidden;
+}
+
+/* ---- bank card ---- */
+.dc-bank { display: block; width: 100%; aspect-ratio: 1.586; perspective: 900px; text-align: left; border-radius: 16px; transition: translate .25s; }
 .dc-bank:hover { translate: 0 -4px; }
 .dc-bank-in { display: flex; height: 100%; flex-direction: column; justify-content: space-between; padding: 16px 18px; border-radius: inherit; color: #fff; position: relative; overflow: hidden;
   background: linear-gradient(140deg, var(--c1), var(--c2)); box-shadow: 0 22px 36px -22px #000, inset 0 0 0 1px rgba(255,255,255,.2);
@@ -67,4 +142,3 @@
 .dc-parts { display: flex; flex-wrap: wrap; gap: 8px; }
 .dc-parts li { padding: 7px 12px; border-radius: 999px; font-size: 13px; border: 1px solid rgba(167,157,255,.3); background: rgba(124,109,240,.1); }
 .dc-parts b { font-weight: 500; color: #cfcbf9; }
-@media (prefers-reduced-motion: reduce) { .dc-coin-in { animation: none; transform: rotateY(-18deg); } .dc-note-in, .dc-bank-in { transition: none; } }

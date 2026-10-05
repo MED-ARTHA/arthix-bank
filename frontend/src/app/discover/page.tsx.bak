@@ -7,31 +7,16 @@ import AppShell from "@/components/AppShell";
 import { BankCard, Banknote, CoinView } from "@/components/Money3D";
 import { BANKS, COINS, CULTURE, NOTES, breakDown } from "@/lib/moroccan";
 
-const SHOWN = BANKS.filter((b) => b.logo);
-
-const TABS = [
-  ["notes", "Banknotes", NOTES.length],
-  ["coins", "Coins", COINS.length],
-  ["banks", "Banks", SHOWN.length],
-  ["culture", "Culture", CULTURE.length],
-] as const;
+const TABS = [["notes", "Banknotes"], ["coins", "Coins"], ["banks", "Banks"], ["culture", "Culture"]] as const;
 type Tab = (typeof TABS)[number][0];
-
-const HINTS: Record<Tab, string> = {
-  notes: "Drag to rotate, click to flip, double-click to reset.",
-  coins: "Drag to rotate. They keep turning on their own when you leave them.",
-  banks: "The banks you see every day. Pick one for a short profile.",
-  culture: "A few habits that shape how Moroccans save, send and spend.",
-};
-
 const ICONS = { users: Users, plane: Plane, store: Store, moon: Moon };
 
 export default function DiscoverPage() {
   const [tab, setTab] = useState<Tab>("notes");
-  const [bankId, setBankId] = useState(SHOWN[0]?.id ?? "");
+  const [bankId, setBankId] = useState(BANKS[1].id);
   const [amount, setAmount] = useState("385");
 
-  const bank = SHOWN.find((b) => b.id === bankId) ?? SHOWN[0];
+  const bank = BANKS.find((b) => b.id === bankId) ?? BANKS[0];
   const parts = breakDown(Number(amount) || 0);
 
   return (
@@ -40,26 +25,21 @@ export default function DiscoverPage() {
         <header className="dc-head">
           <p className="label">Discover</p>
           <h1 className="serif">Money, the Moroccan way</h1>
-          <p>The dirham in your hands, the banks you know, and the habits behind everyday money in Morocco.</p>
+          <p>The dirham in your hands, the banks you know, and the habits that make Moroccan money culture.</p>
         </header>
 
-        <div className="dc-bar">
-          <nav className="dc-tabs" aria-label="Sections">
-            {TABS.map(([k, l, n]) => (
-              <button key={k} className={tab === k ? "on" : ""} onClick={() => setTab(k)}>
-                {l}<em>{n}</em>
-              </button>
-            ))}
-          </nav>
-          <p className="dc-hint">{HINTS[tab]}</p>
-        </div>
+        <nav className="dc-tabs" aria-label="Sections">
+          {TABS.map(([k, l]) => (
+            <button key={k} className={tab === k ? "on" : ""} onClick={() => setTab(k)}>{l}</button>
+          ))}
+        </nav>
 
         {tab === "notes" && (
           <section className="dc-grid">
             {NOTES.map((n) => (
               <figure key={n.value} className="dc-item">
                 <Banknote note={n} />
-                <figcaption><b>{n.value} DH</b><p>{n.fact}</p></figcaption>
+                <figcaption><b>{n.value} DH</b><p>{n.fact}</p><small>Drag to rotate, click to flip, double-click to reset</small></figcaption>
               </figure>
             ))}
           </section>
@@ -70,27 +50,21 @@ export default function DiscoverPage() {
             {COINS.map((c) => (
               <figure key={c.value} className="dc-item dc-item-coin">
                 <CoinView coin={c} />
-                <figcaption><b>{c.value} DH</b><p>{c.fact}</p></figcaption>
+                <figcaption><b>{c.value} DH</b><p>{c.fact}</p><small>Drag to rotate</small></figcaption>
               </figure>
             ))}
           </section>
         )}
 
-        {tab === "banks" && bank && (
+        {tab === "banks" && (
           <>
             <section className="dc-grid dc-grid-banks">
-              {SHOWN.map((b) => <BankCard key={b.id} bank={b} active={b.id === bank.id} onPick={() => setBankId(b.id)} />)}
+              {BANKS.map((b) => <BankCard key={b.id} bank={b} active={b.id === bankId} onPick={() => setBankId(b.id)} />)}
             </section>
             <aside className="dc-detail">
-              <div className="dc-detail-logo">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                {bank.logo ? <img src={bank.logo} alt={bank.name} /> : <b>{bank.name}</b>}
-              </div>
-              <div className="dc-detail-text">
-                <h3 className="serif">{bank.name}</h3>
-                <span className="dc-pill">{bank.kind}</span>
-                <p>{bank.blurb}</p>
-              </div>
+              <h3 className="serif">{bank.name}</h3>
+              <span className="dc-pill">{bank.kind}</span>
+              <p>{bank.blurb}</p>
             </aside>
           </>
         )}

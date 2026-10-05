@@ -106,25 +106,48 @@
   backface-visibility: hidden;
 }
 
-/* ---- bank card ---- */
-.dc-bank { display: block; width: 100%; aspect-ratio: 1.586; perspective: 900px; text-align: left; border-radius: 16px; transition: translate .25s; }
-.dc-bank:hover { translate: 0 -4px; }
-.dc-bank-in { display: flex; height: 100%; flex-direction: column; justify-content: space-between; padding: 16px 18px; border-radius: inherit; color: #fff; position: relative; overflow: hidden;
-  background: linear-gradient(140deg, var(--c1), var(--c2)); box-shadow: 0 22px 36px -22px #000, inset 0 0 0 1px rgba(255,255,255,.2);
-  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform .3s ease-out; }
-.dc-bank.on .dc-bank-in { box-shadow: 0 22px 36px -22px #000, 0 0 0 2px #fff; }
-.dc-bank-in::after { content: ""; position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(115deg, transparent calc(30% + var(--ry, 0deg) * 4), rgba(255,255,255,.2) calc(48% + var(--ry, 0deg) * 4), transparent calc(66% + var(--ry, 0deg) * 4)); }
-.dc-bank-top { display: flex; justify-content: space-between; align-items: center; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; opacity: .9; }
-.dc-bank-top i { width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(255,255,255,.7); border-left-color: transparent; }
-.dc-word { font-family: var(--font-serif, Georgia), serif; font-size: 20px; font-weight: 500; line-height: 1.15; }
-.dc-logo { max-height: 38px; max-width: 70%; object-fit: contain; }
-.dc-chip { width: 36px; height: 26px; border-radius: 5px; background: linear-gradient(135deg, #f1e6b8, #b8a266); }
-.dc-detail { padding: 22px 26px; border-radius: 16px; border: 1px solid rgba(255,255,255,.1); background: #0b0b18; }
-.dc-detail p { margin-top: 12px; max-width: 620px; font-size: 14px; line-height: 1.6; color: #b4b5cb; }
-.dc-detail h3 { display: inline; margin-right: 12px; font-size: 24px; }
-.dc-pill { padding: 3px 10px; border-radius: 999px; font-size: 11px; color: #cfcbf9; border: 1px solid rgba(167,157,255,.35); }
+/* ---- tab bar ---- */
+.dc-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; }
+.dc-tabs button { display: inline-flex; align-items: center; gap: 8px; }
+.dc-tabs em { font-style: normal; font-size: 11px; padding: 1px 7px; border-radius: 999px; background: rgba(255, 255, 255, 0.08); }
+.dc-tabs button.on em { background: rgba(255, 255, 255, 0.22); }
+.dc-hint { font-size: 12.5px; color: #6d6e86; }
 
+/* ---- bank card ---- */
+.dc-grid-banks { gap: 20px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+.dc-bank { display: block; width: 100%; text-align: left; perspective: 900px; border-radius: 18px; }
+.dc-bank-in {
+  position: relative;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  height: 196px;
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 24px 40px -28px #000;
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.3s ease-out, border-color 0.2s, box-shadow 0.2s;
+}
+.dc-bank-in::before { content: ""; position: absolute; inset: 0 0 auto; height: 3px; z-index: 1; background: linear-gradient(90deg, var(--c1), var(--c2)); }
+.dc-bank-logo { display: grid; place-items: center; margin: 14px 14px 0; padding: 14px; border-radius: 12px; background: linear-gradient(160deg, #fcfcfe, #e9eaf2); }
+.dc-bank-logo img { max-width: 80%; max-height: 74px; object-fit: contain; }
+.dc-bank-logo b { font-size: 16px; text-align: center; color: #1a1a2e; }
+.dc-bank-meta { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 12px 16px 14px; }
+.dc-bank-meta span { font-size: 13.5px; }
+.dc-bank-meta small { font-size: 11px; color: #8b8ca3; }
+.dc-bank:hover .dc-bank-in { border-color: rgba(167, 157, 255, 0.45); }
+.dc-bank:focus-visible { outline: 2px solid #7c6df0; outline-offset: 4px; }
+.dc-bank.on .dc-bank-in { border-color: #7c6df0; box-shadow: 0 0 0 1px #7c6df0, 0 26px 44px -26px rgba(124, 109, 240, 0.7); }
+
+.dc-detail { display: flex; flex-wrap: wrap; align-items: center; gap: 22px 28px; padding: 24px 28px; border-radius: 18px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.03); }
+.dc-detail-logo { display: grid; place-items: center; width: 170px; height: 90px; flex-shrink: 0; border-radius: 12px; background: linear-gradient(160deg, #fcfcfe, #e9eaf2); }
+.dc-detail-logo img { max-width: 80%; max-height: 62px; object-fit: contain; }
+.dc-detail-logo b { padding: 0 10px; font-size: 14px; text-align: center; color: #1a1a2e; }
+.dc-detail-text { flex: 1; min-width: 240px; }
+.dc-detail-text h3 { display: inline; margin-right: 12px; font-size: 24px; }
+.dc-detail-text p { margin-top: 12px; max-width: 640px; font-size: 14px; line-height: 1.6; color: #b4b5cb; }
+.dc-pill { padding: 3px 10px; border-radius: 999px; font-size: 11px; color: #cfcbf9; border: 1px solid rgba(167, 157, 255, 0.35); }
 /* ---- culture + change ---- */
 .dc-culture { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
 .dc-culture article { display: grid; gap: 10px; padding: 24px; align-content: start; }
@@ -142,3 +165,15 @@
 .dc-parts { display: flex; flex-wrap: wrap; gap: 8px; }
 .dc-parts li { padding: 7px 12px; border-radius: 999px; font-size: 13px; border: 1px solid rgba(167,157,255,.3); background: rgba(124,109,240,.1); }
 .dc-parts b { font-weight: 500; color: #cfcbf9; }
+/* ---- logos on glass ---- */
+.dc-bank-logo, .dc-detail-logo {
+  background: radial-gradient(120% 120% at 50% 0%, rgba(124, 109, 240, 0.18), transparent 70%), rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+.dc-bank-logo img, .dc-detail-logo img { opacity: 0.92; filter: var(--logo-filter, brightness(0) invert(1)); }
+.dc-bank-logo b, .dc-detail-logo b { color: #ececf3; }
+.dc-detail-logo { width: 190px; }
+
+/* ---- original logo colours ---- */
+.dc-bank-logo img, .dc-detail-logo img { opacity: 1; filter: var(--logo-filter); }
+.dc-bank-logo b, .dc-detail-logo b { color: #ececf3; }

@@ -2,16 +2,16 @@
 .rail-card { padding: 20px 22px; border-radius: 16px; }
 .rail-card header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
 .rail-card h3 { font-size: 14px; font-weight: 500; }
-.rail-card header span, .rail-card header a { font-size: 11px; letter-spacing: 0.04em; color: #8b8ca3; }
+.rail-card header a { font-size: 11px; letter-spacing: 0.04em; color: #8b8ca3; }
 .rail-card header a:hover { color: #fff; }
 
-.rail-rates li { display: grid; grid-template-columns: 38px 1fr auto; align-items: center; gap: 10px; padding: 9px 0; font-size: 13px; border-top: 1px solid rgba(255, 255, 255, 0.06); }
-.rail-rates li:first-child { border-top: 0; }
-.rail-rates b { font-weight: 500; letter-spacing: 0.06em; }
-.rail-rates span { color: #8b8ca3; }
-.rail-rates em { font-style: normal; font-variant-numeric: tabular-nums; }
-.rail-link { display: inline-flex; align-items: center; gap: 4px; margin-top: 10px; font-size: 12px; color: #a89ff5; }
-.rail-link:hover { color: #fff; }
+/* the card, directly on the page */
+.rail-scene { --px: 0; --py: 0; position: relative; padding: 34px 0 22px; }
+.rail-scene::before {
+  content: ""; position: absolute; inset: 6% -6% 0; pointer-events: none;
+  background: radial-gradient(60% 60% at 50% 55%, rgba(124, 109, 240, 0.22), transparent 72%);
+}
+.rail-scene .ov-scene { padding: 0 22px; }
 
 .rail-pay { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .rail-pay a {
@@ -21,7 +21,30 @@
 .rail-pay a:hover { border-color: rgba(167, 157, 255, 0.45); background: rgba(124, 109, 240, 0.1); }
 .rail-pay svg { flex-shrink: 0; color: #a89ff5; }
 
-.rail-banks a { display: flex; align-items: center; gap: 12px; padding: 9px 4px; font-size: 13px; border-radius: 8px; transition: background 0.2s; }
-.rail-banks a:hover { background: rgba(255, 255, 255, 0.04); }
-.rail-banks i { width: 26px; height: 18px; flex-shrink: 0; border-radius: 4px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2); }
-.rail-banks small { margin-left: auto; font-size: 11px; color: #6d6e86; }
+/* bank logos: white silhouettes on dark glass, with the name, and a thin line in the bank's colour */
+.rail-banks { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.rail-bank {
+  position: relative; display: grid; gap: 8px; justify-items: center; padding: 14px 10px 11px; overflow: hidden; border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.07); background: rgba(255, 255, 255, 0.025);
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
+}
+.rail-bank::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 2px; background: var(--c1); opacity: 0.7; }
+.rail-bank:hover { border-color: rgba(167, 157, 255, 0.4); background: rgba(124, 109, 240, 0.08); transform: translateY(-2px); }
+.rail-bank-logo { display: grid; place-items: center; width: 100%; height: 32px; }
+.rail-bank-logo img { max-width: 82%; max-height: 28px; object-fit: contain; opacity: 0.9; filter: var(--logo-filter, brightness(0) invert(1)); }
+.rail-bank-logo b { font-size: 15px; font-weight: 600; letter-spacing: 0.04em; color: #cfd0e0; }
+.rail-bank-name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11.5px; color: #9b9cb3; }
+/* ---- card size and spacing ---- */
+.rail { gap: 22px; }
+.rail-scene { padding: 48px 0 76px; }
+.dash .rail-scene .ov-scene { padding: 0 0 0 4px; }
+.dash .rail-scene .ov-stack { width: calc(100% - 44px); }
+.dash .rail-scene .ov-foot { font-size: 12px; letter-spacing: 0.1em; }
+.dash .rail-scene .ov-top { font-size: 16px; }
+.dash .rail-scene .ov-chip { width: 48px; height: 36px; }
+.dash .rail-scene .ov-o1 { width: 76px; height: 76px; right: -22px; top: -34px; }
+.dash .rail-scene .ov-o2 { width: 42px; height: 42px; left: -18px; bottom: -18px; }
+
+/* logos keep their colours: transparent background, a soft light behind them */
+.rail-bank-logo { background: radial-gradient(closest-side, rgba(255, 255, 255, 0.1), transparent); }
+.rail-bank-logo img { opacity: 1; max-height: 30px; filter: var(--logo-filter); }
