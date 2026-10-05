@@ -71,3 +71,7 @@
 .dash .rail-scene .ov-foot { font-size: 11.5px; letter-spacing: 0.08em; }
 .dash .rail-scene .ov-o1 { width: 62px; height: 62px; right: -14px; top: -28px; }
 .dash .rail-scene .ov-o2 { width: 36px; height: 36px; left: -4px; bottom: -14px; }
+
+/* ---- plain logos ---- */
+.rail-bank-logo { background: none; }
+.rail-bank-logo img { filter: none; opacity: 1; }
