@@ -1,22 +1,17 @@
-/* Top left, right after the menu toggle. No frame: just the logo with a soft glow. */
+/* Top left, right after the menu toggle. Same height as the toggle, no frame. */
 .menu-logo {
   position: fixed;
   z-index: 45;
-  top: 22px;
+  top: 20px;
   left: 68px;
   display: none;
   align-items: center;
   animation: menuLogoIn 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-  transition: transform 0.25s, opacity 0.2s;
+  transition: opacity 0.2s;
 }
-.menu-logo:hover { transform: translateY(-1px); opacity: 0.92; }
-.menu-logo:focus-visible { outline: 2px solid #7c6df0; outline-offset: 4px; border-radius: 8px; }
-.menu-logo img {
-  display: block;
-  height: 60px;
-  width: auto;
-  filter: brightness(1.4) drop-shadow(0 0 14px rgba(124, 109, 240, 0.6));
-}
+.menu-logo:hover { opacity: 0.85; }
+.menu-logo:focus-visible { outline: 2px solid #7c6df0; outline-offset: 4px; border-radius: 6px; }
+.menu-logo img { display: block; height: 32px; width: auto; filter: brightness(1.35) drop-shadow(0 0 10px rgba(124, 109, 240, 0.5)); }
 @media (min-width: 1024px) { .menu-logo { display: flex; } }
-@keyframes menuLogoIn { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: none; } }
+@keyframes menuLogoIn { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .menu-logo { animation: none; } }

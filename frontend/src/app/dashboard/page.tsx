@@ -1,18 +1,20 @@
 "use client";
 
+import "./dashboard.css";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import AppShell from "@/components/AppShell";
 import { Bars, Donut } from "@/components/Charts";
+import DashboardRail from "@/components/DashboardRail";
 import OverviewHero from "@/components/OverviewHero";
-import Photo from "@/components/Photo";
 import Receipt from "@/components/Receipt";
 import TransactionList from "@/components/TransactionList";
 import { api, Goal, Transaction } from "@/lib/api";
 import { byCategory, isSpend, last7Days } from "@/lib/analytics";
 import { delay, money } from "@/lib/format";
 
-const SHADES = ["#7c6df0", "#a89ff5", "#cfcbf9", "#554bb8"];
+const SHADES = ["#7c6df0", "#4fd1c5", "#6cb4ff", "#f2b45a"];
+const GHOST = [38, 56, 30, 70, 48, 62, 40];
 
 export default function DashboardPage() {
   const [txs, setTxs] = useState<Transaction[]>([]);
@@ -40,71 +42,70 @@ export default function DashboardPage() {
 
   return (
     <AppShell>
-      <div className="space-y-10">
-        <OverviewHero />
+      <div className="dash">
+        <div className="dash-main">
+          <OverviewHero />
 
-        <section className="rise card grid divide-y divide-[var(--line)] sm:grid-cols-3 sm:divide-x sm:divide-y-0" style={delay(1)}>
-          {stats.map(([label, value]) => (
-            <div key={label} className="p-6">
-              <p className="label">{label}</p>
-              <p className="serif mt-2 text-2xl">{value}</p>
-            </div>
-          ))}
-        </section>
-
-        <Link href="/goals" className="rise block" style={delay(2)}>
-          <Photo src="/images/banner-savings.jpg" className="h-40 rounded-xl border border-[var(--line)]">
-            <div className="flex h-full flex-col justify-end p-6">
-              <p className="label">Savings goals</p>
-              <p className="serif mt-1 text-2xl">Put money aside for what matters.</p>
-            </div>
-          </Photo>
-        </Link>
-
-        <div className="grid gap-4 lg:grid-cols-5">
-          <section className="rise card p-6 lg:col-span-3" style={delay(3)}>
-            <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-sm">Spending, last 7 days</h2>
-              <span className="label">MAD</span>
-            </div>
-            <Bars data={days} />
+          <section className="card dash-stats rise" style={delay(1)}>
+            {stats.map(([label, value]) => (
+              <div key={label}>
+                <p className="label">{label}</p>
+                <p className="serif">{value}</p>
+              </div>
+            ))}
           </section>
 
-          <section className="rise card p-6 lg:col-span-2" style={delay(4)}>
-            <h2 className="mb-6 text-sm">Where your money goes</h2>
-            {cats.length === 0 ? (
-              <p className="py-10 text-center text-sm text-[var(--muted)]">No spending yet.</p>
-            ) : (
-              <div className="flex flex-col items-center gap-6 sm:flex-row lg:flex-col xl:flex-row">
-                <Donut segments={cats} size={140}>
-                  <span className="label">Total</span>
-                  <span className="mt-0.5 text-sm">{money(spent)}</span>
-                </Donut>
-                <ul className="w-full space-y-3 text-sm">
-                  {cats.map((c) => (
-                    <li key={c.key} className="flex items-center justify-between gap-3">
-                      <span className="flex items-center gap-2 text-[var(--muted)]">
-                        <span className="h-2 w-2 rounded-full" style={{ background: c.color }} />
-                        {c.label}
-                      </span>
-                      <span>{spent > 0 ? Math.round((c.value / spent) * 100) : 0}%</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+          <div className="dash-charts">
+            <section className="card dash-panel rise" style={delay(2)}>
+              <header><h2>Spending, last 7 days</h2><span className="label">MAD</span></header>
+              {spent > 0 ? (
+                <Bars data={days} />
+              ) : (
+                <div className="dash-empty">
+                  <div className="dash-ghost" aria-hidden="true">
+                    {GHOST.map((h, i) => <i key={i} style={{ height: `${h}%` }} />)}
+                  </div>
+                  <p>Your week will show up here once you pay a bill or send money.</p>
+                  <Link href="/payments">Make a payment</Link>
+                </div>
+              )}
+            </section>
+
+            <section className="card dash-panel rise" style={delay(3)}>
+              <header><h2>Where your money goes</h2></header>
+              {cats.length === 0 ? (
+                <div className="dash-empty">
+                  <p>No spending yet, so there is nothing to split.</p>
+                </div>
+              ) : (
+                <div className="dash-split">
+                  <Donut segments={cats} size={132}>
+                    <span className="label">Total</span>
+                    <span className="mt-0.5 text-sm">{money(spent)}</span>
+                  </Donut>
+                  <ul>
+                    {cats.map((c) => (
+                      <li key={c.key}>
+                        <span><i style={{ background: c.color }} />{c.label}</span>
+                        <b>{spent > 0 ? Math.round((c.value / spent) * 100) : 0}%</b>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </section>
+          </div>
+
+          <section className="rise" style={delay(4)}>
+            <header className="dash-row">
+              <h2>Recent activity</h2>
+              <Link href="/transactions">View all</Link>
+            </header>
+            <TransactionList items={txs.slice(0, 6)} onSelect={setOpen} />
           </section>
         </div>
 
-        <section>
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm">Recent activity</h2>
-            <Link href="/transactions" className="text-xs text-[var(--muted)] hover:text-white">
-              View all
-            </Link>
-          </div>
-          <TransactionList items={txs.slice(0, 5)} onSelect={setOpen} />
-        </section>
+        <DashboardRail />
       </div>
 
       {open && <Receipt tx={open} onClose={() => setOpen(null)} />}

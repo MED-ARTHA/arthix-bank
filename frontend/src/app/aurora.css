@@ -1,0 +1,69 @@
+/* =========================================================
+   Arthix: full-width pages + richer light palette.
+   Loaded after globals.css and lights.css.
+   ========================================================= */
+:root {
+  --page-max: 1360px;                       /* lower it (e.g. 1600px) to cap the content on huge screens */
+  --page-pad: clamp(20px, 3vw, 48px);
+
+  --au-violet: 124, 109, 240;
+  --au-magenta: 217, 70, 239;
+  --au-blue: 59, 130, 246;
+  --au-teal: 20, 184, 166;
+  --au-amber: 245, 158, 11;
+
+  /* legacy accent names used by older pages: real colours instead of grey */
+  --amber: #f2b45a;
+  --sky: #6cb4ff;
+  --teal: #4fd1c5;
+  --rose: #f27a9a;
+}
+
+/* ---------- full width content ---------- */
+html body main.mx-auto {
+  width: 100%;
+  max-width: var(--page-max);
+  margin-inline: auto;
+  padding-inline: var(--page-pad);
+}
+/* the logo and the toggle sit in the top corner when the menu is hidden: keep the content clear of them */
+@media (min-width: 1024px) {
+  html[data-nav="hidden"] body main.mx-auto { padding-top: 72px; }
+}
+
+/* ---------- aurora: five lights, slowly drifting ---------- */
+html::before {
+  content: "";
+  position: fixed;
+  inset: -15%;
+  z-index: -3;
+  pointer-events: none;
+  background:
+    radial-gradient(38% 42% at 12% 10%, rgba(var(--au-violet), 0.36), transparent 70%),
+    radial-gradient(32% 38% at 88% 12%, rgba(var(--au-magenta), 0.22), transparent 70%),
+    radial-gradient(40% 46% at 94% 80%, rgba(var(--au-teal), 0.26), transparent 72%),
+    radial-gradient(36% 42% at 6% 88%, rgba(var(--au-blue), 0.28), transparent 72%),
+    radial-gradient(30% 28% at 52% 104%, rgba(var(--au-amber), 0.12), transparent 70%);
+  animation: auroraDrift 28s ease-in-out infinite alternate;
+  will-change: transform;
+}
+@keyframes auroraDrift {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(-2%, 1.5%, 0) scale(1.06); }
+}
+
+/* ---------- buttons and hero get a little more colour ---------- */
+.btn-primary { background: linear-gradient(135deg, #7c6df0, #5a86f0); }
+.btn-primary:hover { background: linear-gradient(135deg, #8e80f3, #6b95f3); }
+.btn-primary:disabled { background: linear-gradient(135deg, #7c6df0, #5a86f0); }
+
+.ov-c2 { background: linear-gradient(145deg, #7a3fc9, #2a1a6a); }
+.ov-c3 { background: linear-gradient(145deg, #2f6fd6, #16336e); }
+.ov-o2 {
+  background: radial-gradient(circle at 30% 30%, #ffffff, #5eead4 50%, #0f766e);
+  box-shadow: 0 12px 22px -8px rgba(20, 184, 166, 0.6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html::before { animation: none; }
+}

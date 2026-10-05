@@ -1,38 +1,27 @@
 "use client";
 
-import OverviewHero from "@/components/OverviewHero";
-
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import AppShell from "@/components/AppShell";
 import { Bars, Donut } from "@/components/Charts";
-import CountUp from "@/components/CountUp";
-import Icon from "@/components/Icon";
+import OverviewHero from "@/components/OverviewHero";
 import Photo from "@/components/Photo";
 import Receipt from "@/components/Receipt";
 import TransactionList from "@/components/TransactionList";
-import { api, Goal, Me, Transaction } from "@/lib/api";
+import { api, Goal, Transaction } from "@/lib/api";
 import { byCategory, isSpend, last7Days } from "@/lib/analytics";
 import { delay, money } from "@/lib/format";
 
 const SHADES = ["#7c6df0", "#a89ff5", "#cfcbf9", "#554bb8"];
 
 export default function DashboardPage() {
-  const [me, setMe] = useState<Me | null>(null);
   const [txs, setTxs] = useState<Transaction[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
   const [open, setOpen] = useState<Transaction | null>(null);
-  const [copied, setCopied] = useState(false);
-  const [greet, setGreet] = useState("Welcome back");
-  const [today, setToday] = useState("");
 
   useEffect(() => {
-    api.me().then(setMe).catch(() => {});
     api.transactions().then(setTxs).catch(() => {});
     api.goals().then(setGoals).catch(() => {});
-    const h = new Date().getHours();
-    setGreet(h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening");
-    setToday(new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" }));
   }, []);
 
   const spent = txs.filter(isSpend).reduce((s, t) => s + t.amount, 0);
@@ -43,74 +32,27 @@ export default function DashboardPage() {
   const cats = byCategory(txs).map((c, i) => ({ ...c, color: SHADES[i % SHADES.length] }));
   const days = last7Days(txs);
 
-  function copy() {
-    if (!me?.accountNumber) return;
-    navigator.clipboard.writeText(me.accountNumber);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  }
+  const stats: [string, string][] = [
+    ["Spent", money(spent)],
+    ["Received", money(received)],
+    ["In savings goals", money(saved)],
+  ];
 
   return (
     <AppShell>
-      <OverviewHero />
       <div className="space-y-10">
-        <header className="rise">
-          <p className="label">{today || " "}</p>
-          <h1 className="serif mt-2 text-4xl">
-            {greet}
-            {me ? `, ${me.fullName.split(" ")[0]}` : ""}
-          </h1>
-        </header>
+        <OverviewHero />
 
-        <section className="glow-card rise p-8" style={delay(1)}>
-          <p className="label">Available balance</p>
-          {me ? (
-            <p className="serif mt-3 text-6xl tracking-tight">
-              <CountUp value={me.balance} />
-              <span className="ml-3 text-xl text-[var(--muted)]">MAD</span>
-            </p>
-          ) : (
-            <div className="shimmer mt-3 h-14 w-72 rounded" />
-          )}
-          <div className="mt-8 flex flex-wrap items-end justify-between gap-5 border-t border-white/10 pt-5">
-            <div>
-              <p className="label">Account number</p>
-              <button onClick={copy} className="mt-1 flex items-center gap-2 text-sm tracking-wide hover:text-[#a89ff5]">
-                {me?.accountNumber ?? "-"}
-                <Icon name={copied ? "check" : "copy"} size={14} />
-              </button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Link href="/deposit" className="btn btn-primary flex items-center gap-2">
-                <Icon name="plus" size={16} /> Add money
-              </Link>
-              <Link href="/transfers" className="btn btn-ghost flex items-center gap-2">
-                <Icon name="send" size={16} /> Send
-              </Link>
-              <Link href="/payments" className="btn btn-ghost flex items-center gap-2">
-                <Icon name="receipt" size={16} /> Pay
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        <section
-          className="rise card grid divide-y divide-[var(--line)] sm:grid-cols-3 sm:divide-x sm:divide-y-0"
-          style={delay(2)}
-        >
-          {[
-            ["Spent", money(spent)],
-            ["Received", money(received)],
-            ["In savings goals", money(saved)],
-          ].map(([k, v]) => (
-            <div key={k} className="p-6">
-              <p className="label">{k}</p>
-              <p className="serif mt-2 text-2xl">{v}</p>
+        <section className="rise card grid divide-y divide-[var(--line)] sm:grid-cols-3 sm:divide-x sm:divide-y-0" style={delay(1)}>
+          {stats.map(([label, value]) => (
+            <div key={label} className="p-6">
+              <p className="label">{label}</p>
+              <p className="serif mt-2 text-2xl">{value}</p>
             </div>
           ))}
         </section>
 
-        <Link href="/goals" className="rise block" style={delay(3)}>
+        <Link href="/goals" className="rise block" style={delay(2)}>
           <Photo src="/images/banner-savings.jpg" className="h-40 rounded-xl border border-[var(--line)]">
             <div className="flex h-full flex-col justify-end p-6">
               <p className="label">Savings goals</p>
@@ -120,7 +62,7 @@ export default function DashboardPage() {
         </Link>
 
         <div className="grid gap-4 lg:grid-cols-5">
-          <section className="rise card p-6 lg:col-span-3" style={delay(4)}>
+          <section className="rise card p-6 lg:col-span-3" style={delay(3)}>
             <div className="mb-6 flex items-center justify-between">
               <h2 className="text-sm">Spending, last 7 days</h2>
               <span className="label">MAD</span>
@@ -128,7 +70,7 @@ export default function DashboardPage() {
             <Bars data={days} />
           </section>
 
-          <section className="rise card p-6 lg:col-span-2" style={delay(5)}>
+          <section className="rise card p-6 lg:col-span-2" style={delay(4)}>
             <h2 className="mb-6 text-sm">Where your money goes</h2>
             {cats.length === 0 ? (
               <p className="py-10 text-center text-sm text-[var(--muted)]">No spending yet.</p>
@@ -145,7 +87,7 @@ export default function DashboardPage() {
                         <span className="h-2 w-2 rounded-full" style={{ background: c.color }} />
                         {c.label}
                       </span>
-                      <span>{Math.round((c.value / spent) * 100)}%</span>
+                      <span>{spent > 0 ? Math.round((c.value / spent) * 100) : 0}%</span>
                     </li>
                   ))}
                 </ul>
@@ -164,6 +106,7 @@ export default function DashboardPage() {
           <TransactionList items={txs.slice(0, 5)} onSelect={setOpen} />
         </section>
       </div>
+
       {open && <Receipt tx={open} onClose={() => setOpen(null)} />}
     </AppShell>
   );
