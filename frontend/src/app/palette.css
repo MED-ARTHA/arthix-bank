@@ -8,7 +8,7 @@
   --magenta-soft: rgba(217, 70, 184, 0.14);
   --blue: #3b4cf0;
   --grad-hot: linear-gradient(145deg, #ec4899 0%, #a855f7 100%);
-  --grad-cool: linear-gradient(135deg, #7c6df0 0%, #22b8c9 100%);
+  --grad-cool: linear-gradient(145deg, #ec4899 0%, #b57cf5 100%);
 }
 
 /* three soft lights fixed behind everything */
@@ -45,3 +45,107 @@ html::before {
 /* ---- layering ---- */
 html::before { mix-blend-mode: screen; }
 body { position: relative; z-index: 1; }
+
+/* ---- buttons ---- */
+:root {
+  --btn-grad: linear-gradient(145deg, #ec4899 0%, #c15fe0 55%, #b57cf5 100%);
+  --btn-grad-hover: linear-gradient(145deg, #f35aa8 0%, #cd70ea 55%, #c18cfa 100%);
+  --btn-glow: 0 10px 28px -10px rgba(236, 72, 153, 0.7);
+  --ring: 0 0 0 3px rgba(236, 72, 153, 0.3);
+}
+
+/* primary */
+.btn-primary, .auth-btn, .inv-mini.fill, .chat-composer .btn-primary {
+  color: #fff;
+  background: var(--btn-grad);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: var(--btn-glow), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+}
+.btn-primary:hover:not(:disabled), .auth-btn:hover:not(:disabled), .inv-mini.fill:hover {
+  background: var(--btn-grad-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 14px 32px -10px rgba(236, 72, 153, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+.btn-primary:active:not(:disabled), .auth-btn:active:not(:disabled) { transform: translateY(0) scale(0.99); }
+.btn-primary:disabled, .auth-btn:disabled { filter: saturate(0.5) brightness(0.8); box-shadow: none; }
+
+/* secondary / ghost: glass with a teal edge on hover */
+.btn-ghost, .inv-mini, .of-arrow, .ov-act {
+  color: #dcdcf0;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: border-color 0.2s, background 0.2s, color 0.2s, transform 0.2s;
+}
+.btn-ghost:hover:not(:disabled), .inv-mini:hover, .ov-act:hover {
+  color: #fff;
+  border-color: rgba(236, 72, 153, 0.6);
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.16), rgba(181, 124, 245, 0.12));
+}
+
+/* selected states: tabs, chips, pills, segmented controls */
+.inv-tab.on, .dc-tabs button.on, .cat-chip.on, .chip-active, .inv-seg button.on, .sel-btn.open {
+  color: #fff;
+  background: var(--btn-grad);
+  border-color: transparent;
+  box-shadow: var(--btn-glow);
+}
+.inv-pill.on {
+  color: #fff;
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.3), rgba(181, 124, 245, 0.22));
+  border-color: rgba(236, 72, 153, 0.55);
+}
+.inv-pill:hover, .cat-chip:hover, .chip:hover { border-color: rgba(236, 72, 153, 0.5); color: #fff; }
+
+/* small accents */
+.pf-cam, .as-input button, .as-fab { background: var(--btn-grad); }
+.of-card:hover .of-arrow { background: var(--btn-grad); border-color: transparent; }
+.bubble-mine { background: linear-gradient(135deg, #d6479a, #a45be0); }
+.inv-bar i, .meter i.on { filter: saturate(1.1); }
+
+/* keyboard focus */
+.btn:focus-visible, button:focus-visible, a:focus-visible { outline: none; box-shadow: var(--ring); }
+.input:focus, .chat-composer:focus-within, .field input:focus, .sel-btn:focus-visible {
+  border-color: #ec4899;
+  box-shadow: var(--ring);
+}
+
+/* destructive and success keep their own colour */
+.btn-danger { color: #fff; background: linear-gradient(135deg, #ef7480, #d6455d); border-color: transparent; }
+
+/* ---- hero actions ---- */
+html body .ov .ov-act {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  height: 46px;
+  padding: 6px 18px 6px 6px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: #f1f1fa;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 22px -14px rgba(0, 0, 0, 0.8);
+  transition: transform 0.25s, border-color 0.25s, background 0.25s, box-shadow 0.25s;
+}
+html body .ov .ov-act > span {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: #fff;
+  background: var(--btn-grad, linear-gradient(145deg, #ec4899, #b57cf5));
+  box-shadow: 0 6px 16px -6px rgba(236, 72, 153, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+html body .ov .ov-act:hover {
+  transform: translateY(-2px);
+  color: #fff;
+  border-color: rgba(236, 72, 153, 0.6);
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.18), rgba(181, 124, 245, 0.12));
+  box-shadow: 0 14px 28px -14px rgba(236, 72, 153, 0.75);
+}
+html body .ov .ov-act:active { transform: translateY(0) scale(0.98); }
