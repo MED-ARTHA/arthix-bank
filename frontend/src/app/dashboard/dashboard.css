@@ -52,3 +52,7 @@
 @media (min-width: 1440px) {
   .dash { grid-template-columns: minmax(0, 1fr) 400px; }
 }
+
+/* ---- rail: no sticky, no overlap ---- */
+.dash > .rail { position: relative; top: auto; z-index: 1; }
+.dash > .dash-main { position: relative; z-index: 2; }

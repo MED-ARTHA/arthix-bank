@@ -48,3 +48,26 @@
 /* logos keep their colours: transparent background, a soft light behind them */
 .rail-bank-logo { background: radial-gradient(closest-side, rgba(255, 255, 255, 0.1), transparent); }
 .rail-bank-logo img { opacity: 1; max-height: 30px; filter: var(--logo-filter); }
+
+/* ---- card out to the left ---- */
+@media (min-width: 1280px) {
+  .rail-scene { position: relative; z-index: 2; margin-left: -56px; }
+}
+
+/* ---- card, compact ---- */
+.rail-scene { padding: 40px 0 62px; }
+@media (min-width: 1280px) {
+  .rail-scene { margin-left: -16px; margin-right: 12px; z-index: 1; }
+  .dash .rail-scene .ov-scene { justify-content: flex-start; padding: 0; }
+  .dash .rail-scene .ov-stack { width: 100%; max-width: 350px; }
+}
+@media (min-width: 1440px) {
+  .dash .rail-scene .ov-stack { max-width: 380px; }
+}
+@media (max-width: 1279px) {
+  .dash .rail-scene .ov-scene { padding: 0; }
+  .dash .rail-scene .ov-stack { width: min(380px, 100%); }
+}
+.dash .rail-scene .ov-foot { font-size: 11.5px; letter-spacing: 0.08em; }
+.dash .rail-scene .ov-o1 { width: 62px; height: 62px; right: -14px; top: -28px; }
+.dash .rail-scene .ov-o2 { width: 36px; height: 36px; left: -4px; bottom: -14px; }

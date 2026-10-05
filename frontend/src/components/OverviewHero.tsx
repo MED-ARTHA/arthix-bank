@@ -77,7 +77,7 @@ export default function OverviewHero() {
         </p>
         <h1 className="ov-hello">
           {now ? greeting(now.getHours()) : "Welcome"}
-          {first ? `, ${first}` : ""}
+          {first && (<>, <span className="ov-name">{first}</span></>)}
         </h1>
 
         <p className="ov-label">Available balance</p>
