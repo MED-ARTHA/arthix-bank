@@ -149,3 +149,13 @@ html body .ov .ov-act:hover {
   box-shadow: 0 14px 28px -14px rgba(236, 72, 153, 0.75);
 }
 html body .ov .ov-act:active { transform: translateY(0) scale(0.98); }
+
+/* ---- dashboard: refined ---- */
+html body .dash-main .card {
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015));
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 20px;
+  box-shadow: 0 24px 50px -36px #000;
+}
+html body .dash-main .card.divide-x > * { border-color: rgba(255, 255, 255, 0.07); }
+html body .dash-main .label { letter-spacing: 0.16em; color: #7d7e96; }

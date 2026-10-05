@@ -1,143 +1,70 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
-import { delay, money } from "@/lib/format";
+import "./charts.css";
+import type { ReactNode } from "react";
 
-export function Sparkline({ values, color = "#7c6df0" }: { values: number[]; color?: string }) {
-  const rawId = useId();
-  const id = "sp" + rawId.replace(/[^a-zA-Z0-9]/g, "");
-  const w = 300;
-  const h = 80;
-  const pad = 6;
-  const pts = values.length > 1 ? values : [0, 0];
-  const min = Math.min(...pts);
-  const max = Math.max(...pts);
-  const span = max - min || 1;
-  const xy = pts.map((v, i) => [(i / (pts.length - 1)) * w, h - pad - ((v - min) / span) * (h - pad * 2)]);
-  const line = xy.map(([x, y], i) => `${i ? "L" : "M"}${x.toFixed(1)} ${y.toFixed(1)}`).join(" ");
-  return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="h-auto w-full overflow-visible">
-      <defs>
-        <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.25" />
-          <stop offset="100%" stopColor={color} stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <path d={`${line} L${w} ${h} L0 ${h} Z`} fill={`url(#${id})`} className="fade-in" />
-      <path d={line} fill="none" stroke={color} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" pathLength={1} className="draw-line" />
-    </svg>
-  );
-}
+type Point = { label: string; value: number };
 
-export function Bars({
-  data,
-  format = money,
-}: {
-  data: { label: string; value: number }[];
-  format?: (n: number) => string;
-}) {
+const fmt = (n: number) => n.toLocaleString("fr-FR", { maximumFractionDigits: 0 });
+
+/** Vertical bars with a light grid. The last bar is the highlighted one (usually "today"). */
+export function Bars({ data, height = 190 }: { data: Point[]; height?: number }) {
   const max = Math.max(...data.map((d) => d.value), 1);
   return (
-    <div className="flex h-44 items-end gap-2 sm:gap-3">
-      {data.map((d, i) => (
-        <div key={d.label + i} className="flex h-full flex-1 flex-col items-center justify-end gap-2">
-          <div className="flex w-full flex-1 items-end">
-            <div
-              className="bar w-full rounded-t-sm"
-              style={{ height: `${Math.max((d.value / max) * 100, d.value > 0 ? 4 : 1.5)}%`, ...delay(i) }}
-              title={format(d.value)}
-            />
+    <div className="ch-bars" style={{ height }}>
+      <div className="ch-grid" aria-hidden="true"><i /><i /><i /><i /></div>
+      {data.map((d, i) => {
+        const pct = (d.value / max) * 100;
+        const last = i === data.length - 1;
+        return (
+          <div key={d.label + i} className={"ch-col" + (last ? " is-last" : "")}>
+            <div className="ch-track">
+              {d.value > 0 && <span className="ch-val">{fmt(d.value)}</span>}
+              <div className={"ch-bar" + (d.value === 0 ? " zero" : "")} style={{ height: d.value === 0 ? "3px" : `${Math.max(pct, 4)}%` }} />
+            </div>
+            <span className="ch-lab">{d.label}</span>
           </div>
-          <span className="text-[10px] uppercase tracking-wider text-[var(--muted)]">{d.label}</span>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
 
+/** Thin ring chart. Children are centred inside the ring. */
 export function Donut({
-  segments,
-  size = 160,
-  children,
-}: {
-  segments: { value: number; color: string }[];
-  size?: number;
-  children?: React.ReactNode;
-}) {
-  const r = 40;
-  const C = 2 * Math.PI * r;
-  const total = segments.reduce((s, x) => s + x.value, 0);
-  let acc = 0;
-  return (
-    <div className="relative shrink-0" style={{ width: size, height: size }}>
-      <svg viewBox="0 0 100 100" className="h-full w-full -rotate-90">
-        <circle cx="50" cy="50" r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="8" />
-        {total > 0 &&
-          segments.map((s, i) => {
-            const len = (s.value / total) * C;
-            const el = (
-              <circle
-                key={i}
-                className="donut-seg"
-                cx="50"
-                cy="50"
-                r={r}
-                fill="none"
-                stroke={s.color}
-                strokeWidth="8"
-                strokeDasharray={`${Math.max(len - 1.5, 0)} ${C}`}
-                strokeDashoffset={-acc}
-                style={delay(i)}
-              />
-            );
-            acc += len;
-            return el;
-          })}
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-center">{children}</div>
-    </div>
-  );
-}
-
-export function Ring({
-  value,
-  size = 96,
-  stroke = 6,
-  color = "#7c6df0",
-  children,
-}: {
-  value: number;
-  size?: number;
-  stroke?: number;
-  color?: string;
-  children?: React.ReactNode;
-}) {
+  size = 150, segments, children,
+}: { size?: number; segments: { value: number; color: string }[]; children?: ReactNode }) {
+  const stroke = Math.max(8, Math.round(size * 0.085));
   const r = (size - stroke) / 2;
-  const C = 2 * Math.PI * r;
-  const target = Math.min(Math.max(value, 0), 1);
-  const [p, setP] = useState(0);
-  useEffect(() => {
-    const id = requestAnimationFrame(() => setP(target));
-    return () => cancelAnimationFrame(id);
-  }, [target]);
+  const c = 2 * Math.PI * r;
+  const total = segments.reduce((s, x) => s + x.value, 0);
+  const gap = segments.length > 1 ? 6 : 0;
+  let offset = 0;
+
   return (
-    <div className="relative shrink-0" style={{ width: size, height: size }}>
-      <svg width={size} height={size} className="-rotate-90">
+    <div className="ch-donut" style={{ width: size, height: size }}>
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden="true">
+        <defs>
+          <linearGradient id="ch-hot" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#ec4899" />
+            <stop offset="1" stopColor="#b57cf5" />
+          </linearGradient>
+        </defs>
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth={stroke} />
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={r}
-          fill="none"
-          stroke={color}
-          strokeWidth={stroke}
-          strokeLinecap="round"
-          strokeDasharray={C}
-          strokeDashoffset={C * (1 - p)}
-          style={{ transition: "stroke-dashoffset 1s cubic-bezier(0.2, 0.7, 0.2, 1)" }}
-        />
+        {total > 0 && segments.map((s, i) => {
+          const len = Math.max((s.value / total) * c - gap, 0.5);
+          const el = (
+            <circle key={i} cx={size / 2} cy={size / 2} r={r} fill="none"
+              stroke={segments.length === 1 ? "url(#ch-hot)" : s.color}
+              strokeWidth={stroke} strokeLinecap="round"
+              strokeDasharray={`${len} ${c - len}`} strokeDashoffset={-offset}
+              transform={`rotate(-90 ${size / 2} ${size / 2})`} />
+          );
+          offset += (s.value / total) * c;
+          return el;
+        })}
       </svg>
-      <div className="absolute inset-0 flex items-center justify-center">{children}</div>
+      <div className="ch-center">{children}</div>
     </div>
   );
 }
