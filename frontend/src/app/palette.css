@@ -1,0 +1,47 @@
+/* =========================================================
+   Palette: deep navy + teal, magenta and blue glows
+   ========================================================= */
+:root {
+  --teal: #22b8c9;
+  --teal-soft: rgba(34, 184, 201, 0.14);
+  --magenta: #d946b8;
+  --magenta-soft: rgba(217, 70, 184, 0.14);
+  --blue: #3b4cf0;
+  --grad-hot: linear-gradient(145deg, #ec4899 0%, #a855f7 100%);
+  --grad-cool: linear-gradient(135deg, #7c6df0 0%, #22b8c9 100%);
+}
+
+/* three soft lights fixed behind everything */
+html::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(38vmax 38vmax at 0% 0%, rgba(59, 76, 240, 0.34), transparent 70%),
+    radial-gradient(46vmax 40vmax at 100% 38%, rgba(34, 184, 201, 0.26), transparent 70%),
+    radial-gradient(42vmax 40vmax at 0% 100%, rgba(217, 70, 184, 0.22), transparent 70%);
+}
+
+/* glass cards with a slight teal / violet tint */
+.card {
+  background:
+    linear-gradient(135deg, rgba(124, 109, 240, 0.08), rgba(34, 184, 201, 0.05)),
+    var(--surface);
+  border-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+/* accents */
+.btn-primary { background: var(--grad-cool); border-color: transparent; }
+.btn-primary:hover { filter: brightness(1.08); }
+.grad-text { background: var(--grad-cool); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.orb-badge {
+  display: inline-grid; place-items: center; width: 120px; aspect-ratio: 1; border-radius: 50%; color: #fff;
+  background: var(--grad-hot); border: 2px solid rgba(255, 255, 255, 0.35); box-shadow: 0 20px 50px -20px rgba(217, 70, 184, 0.7);
+}
+.pill-up { padding: 2px 8px; border-radius: 999px; font-size: 11px; color: #5cc9a7; background: rgba(92, 201, 167, 0.14); }
+/* ---- layering ---- */
+html::before { mix-blend-mode: screen; }
+body { position: relative; z-index: 1; }

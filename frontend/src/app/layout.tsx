@@ -3,6 +3,7 @@ import { Inter, Newsreader } from "next/font/google";
 import "./globals.css";
 import "./lights.css";
 import "./aurora.css";
+import "./palette.css";
 import SidebarToggle from "@/components/SidebarToggle";
 import HiddenMenuLogo from "@/components/HiddenMenuLogo";
 
