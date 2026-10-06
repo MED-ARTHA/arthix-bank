@@ -1,0 +1,106 @@
+.ab {
+  --ab-h: 58px; /* logo height */
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 25;
+  pointer-events: none;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: start;
+  padding: 22px clamp(20px, 4vw, 64px) 0;
+}
+
+.ab-center {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 0 clamp(18px, 3vw, 40px);
+}
+
+.ab-glow {
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 46%;
+  width: 380px;
+  height: 120px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(closest-side, rgba(124, 109, 240, 0.4), transparent);
+  filter: blur(10px);
+  animation: abGlow 4.5s ease-in-out infinite;
+}
+
+.ab-logo {
+  display: block;
+  height: var(--ab-h);
+  width: auto;
+  filter: brightness(1.45) saturate(1.1) drop-shadow(0 4px 16px rgba(0, 0, 0, 0.6));
+  animation: abLogoIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.ab-caption {
+  margin: 0;
+  padding-left: 0.42em;
+  font-size: 9.5px;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: #8b8ca3;
+  animation: abFade 0.8s 0.55s both;
+}
+
+/* thin lines on each side, with a small glowing diamond at the end next to the logo */
+.ab-line {
+  position: relative;
+  height: 1px;
+  width: min(100%, 300px);
+  margin-top: calc(var(--ab-h) / 2);
+}
+.ab-line::after {
+  content: "";
+  position: absolute;
+  top: -2.5px;
+  width: 6px;
+  height: 6px;
+  transform: rotate(45deg);
+  background: #cfcbf9;
+  box-shadow: 0 0 10px rgba(167, 157, 255, 0.9);
+}
+.ab-left {
+  justify-self: end;
+  background: linear-gradient(90deg, transparent, rgba(167, 157, 255, 0.55));
+  animation: abLineL 1s 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.ab-left::after { right: 0; }
+.ab-right {
+  justify-self: start;
+  background: linear-gradient(270deg, transparent, rgba(167, 157, 255, 0.55));
+  animation: abLineR 1s 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.ab-right::after { left: 0; }
+
+@keyframes abLogoIn { from { opacity: 0; transform: translateY(-12px) scale(0.96); } to { opacity: 1; transform: none; } }
+@keyframes abFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes abGlow {
+  0%, 100% { opacity: 0.55; transform: translate(-50%, -50%) scale(0.95); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.06); }
+}
+@keyframes abLineL { from { opacity: 0; clip-path: inset(-10px 0 -10px 100%); } to { opacity: 1; clip-path: inset(-10px 0 -10px 0); } }
+@keyframes abLineR { from { opacity: 0; clip-path: inset(-10px 100% -10px 0); } to { opacity: 1; clip-path: inset(-10px 0 -10px 0); } }
+
+/* the old logos inside the form are replaced by this header */
+.auth-showcase > img { visibility: hidden !important; }
+.auth-mobile-logo { display: none !important; }
+
+@media (max-width: 1023px) {
+  .auth-panel { padding-top: 120px !important; }
+}
+@media (max-width: 640px) {
+  .ab { --ab-h: 46px; padding-top: 16px; }
+  .ab-line { width: min(100%, 80px); }
+  .ab-glow { width: 260px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ab *, .ab-logo, .ab-caption { animation: none !important; }
+}

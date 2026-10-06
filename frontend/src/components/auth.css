@@ -368,3 +368,15 @@
   filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.55));
 }
 .auth-mobile-logo img { height: 48px !important; }
+
+/* ---- lifted showcase ---- */
+@media (min-width: 1024px) {
+  .auth-showcase {
+    justify-content: center !important;
+    gap: clamp(28px, 5.5vh, 60px) !important;
+    padding-top: 112px !important;    /* clears the brand header */
+    padding-bottom: 108px !important; /* clears the partners strip */
+  }
+  /* the old logo slot is empty now, it must not take space */
+  .auth-showcase > img { display: none !important; }
+}

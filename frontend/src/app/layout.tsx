@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Newsreader } from "next/font/google";
 import "./globals.css";
+import AuthBrandHeader from "@/components/AuthBrandHeader";
 import "./lights.css";
 import "./aurora.css";
 import "./palette.css";
@@ -22,6 +23,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         {children}
         <SidebarToggle />
         <HiddenMenuLogo />
+        <AuthBrandHeader />
       </body>
     </html>
   );
