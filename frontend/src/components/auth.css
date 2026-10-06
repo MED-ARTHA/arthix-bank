@@ -374,9 +374,13 @@
   .auth-showcase {
     justify-content: center !important;
     gap: clamp(28px, 5.5vh, 60px) !important;
-    padding-top: 112px !important;    /* clears the brand header */
-    padding-bottom: 108px !important; /* clears the partners strip */
+    padding-top: 138px !important;    /* clears the brand header */
+    padding-bottom: 86px !important; /* clears the partners strip */
   }
   /* the old logo slot is empty now, it must not take space */
   .auth-showcase > img { display: none !important; }
+}
+/* ---- text up ---- */
+@media (min-width: 1024px) {
+  .auth-copy { transform: translateY(-32px); }
 }
