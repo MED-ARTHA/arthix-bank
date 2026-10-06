@@ -47,7 +47,7 @@ export default function Assistant() {
     <>
       {!open && (
         <button className="as-fab" onClick={() => setOpen(true)} aria-label="Open assistant">
-          <Sparkles size={20} strokeWidth={1.6} />
+          <Sparkles size={20} strokeWidth={1.5} /><span className="as-fab-label">Ask Arthix</span><span className="as-fab-dot" />
         </button>
       )}
       {open && (

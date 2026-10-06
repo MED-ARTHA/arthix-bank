@@ -22,3 +22,81 @@
 .as-input button:disabled { opacity: .45; }
 .as-note { padding: 0 14px 12px; text-align: center; font-size: 10.5px; color: #6d6e86; }
 @media (max-width: 520px) { .as-fab, .as-panel { right: 16px; bottom: 16px; } }
+/* ---- refined fab ---- */
+.as-fab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  width: auto;
+  height: 52px;
+  min-width: 52px;
+  padding: 0 15px;
+  overflow: visible;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: #cfcbf9;
+  background:
+    linear-gradient(rgba(10, 10, 26, 0.88), rgba(10, 10, 26, 0.88)) padding-box,
+    linear-gradient(135deg, rgba(190, 180, 255, 0.9), rgba(124, 109, 240, 0.35) 45%, rgba(14, 150, 170, 0.75)) border-box;
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  box-shadow: 0 16px 38px -14px rgba(90, 76, 220, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: transform 0.25s, box-shadow 0.25s, color 0.2s, gap 0.3s, padding 0.3s;
+}
+.as-fab:hover {
+  gap: 10px;
+  padding: 0 20px 0 16px;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 20px 44px -14px rgba(110, 94, 240, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+.as-fab:focus-visible { outline: 2px solid #a79dff; outline-offset: 3px; }
+.as-fab svg { flex-shrink: 0; }
+.as-fab-label {
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  opacity: 0;
+  transition: max-width 0.3s ease, opacity 0.25s ease;
+}
+.as-fab:hover .as-fab-label,
+.as-fab:focus-visible .as-fab-label { max-width: 110px; opacity: 1; }
+
+/* small "online" point */
+.as-fab-dot {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #4fd1a5;
+  border: 2px solid #0a0a1a;
+}
+.as-fab-dot::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 1px solid rgba(79, 209, 165, 0.7);
+  animation: asPing 2.4s ease-out infinite;
+}
+@keyframes asPing { 0% { transform: scale(0.8); opacity: 0.9; } 100% { transform: scale(2.1); opacity: 0; } }
+
+/* same look for the avatar in the panel header */
+.as-ava {
+  color: #cfcbf9;
+  border: 1px solid transparent;
+  background:
+    linear-gradient(rgba(10, 10, 26, 0.95), rgba(10, 10, 26, 0.95)) padding-box,
+    linear-gradient(135deg, rgba(190, 180, 255, 0.9), rgba(14, 150, 170, 0.7)) border-box;
+}
+
+@media (max-width: 520px) {
+  .as-fab:hover { padding: 0 15px; gap: 0; }
+  .as-fab:hover .as-fab-label { max-width: 0; opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .as-fab-dot::after { animation: none; } }
