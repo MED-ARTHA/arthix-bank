@@ -44,19 +44,13 @@ export function Donut({
   return (
     <div className="ch-donut" style={{ width: size, height: size }}>
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden="true">
-        <defs>
-          <linearGradient id="ch-hot" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#ec4899" />
-            <stop offset="1" stopColor="#b57cf5" />
-          </linearGradient>
-        </defs>
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth={stroke} />
         {total > 0 && segments.map((s, i) => {
           const len = Math.max((s.value / total) * c - gap, 0.5);
           const el = (
             <circle key={i} cx={size / 2} cy={size / 2} r={r} fill="none"
-              stroke={segments.length === 1 ? "url(#ch-hot)" : s.color}
-              strokeWidth={stroke} strokeLinecap="round"
+              stroke={s.color}
+              strokeWidth={stroke} strokeLinecap="butt"
               strokeDasharray={`${len} ${c - len}`} strokeDashoffset={-offset}
               transform={`rotate(-90 ${size / 2} ${size / 2})`} />
           );
@@ -65,6 +59,46 @@ export function Donut({
         })}
       </svg>
       <div className="ch-center">{children}</div>
+    </div>
+  );
+}
+
+type RingProps = {
+  value?: number;
+  progress?: number;
+  pct?: number;
+  percent?: number;
+  size?: number;
+  stroke?: number;
+  color?: string;
+  track?: string;
+  children?: React.ReactNode;
+  className?: string;
+};
+
+/** Circular progress. The value can be a 0-1 ratio or a 0-100 percentage. Children are centred inside the ring. */
+export function Ring({
+  value, progress, pct, percent,
+  size = 96, stroke = 8, color = "#7c6df0", track = "rgba(255,255,255,0.1)",
+  children, className,
+}: RingProps) {
+  const raw = value ?? progress ?? pct ?? percent ?? 0;
+  const ratio = Math.max(0, Math.min(1, raw > 1 ? raw / 100 : raw));
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  return (
+    <div className={className} style={{ position: "relative", width: size, height: size, flexShrink: 0 }}>
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ transform: "rotate(-90deg)" }} aria-hidden="true">
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={track} strokeWidth={stroke} />
+        <circle
+          cx={size / 2} cy={size / 2} r={r} fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round"
+          strokeDasharray={c} strokeDashoffset={c * (1 - ratio)}
+          style={{ transition: "stroke-dashoffset 0.8s cubic-bezier(0.2, 0.7, 0.2, 1)" }}
+        />
+      </svg>
+      {children !== undefined && (
+        <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center" }}>{children}</div>
+      )}
     </div>
   );
 }
