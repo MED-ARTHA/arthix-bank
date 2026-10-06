@@ -347,3 +347,24 @@
 }
 .c3d-face { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1) !important; }
 .c3d-stage { padding: 0 0 18px !important; }
+
+/* ---- seamless photo + compact logo ---- */
+/* no hard edge between the two halves */
+.auth-showcase { border-right: 0 !important; padding: 40px clamp(32px, 4vw, 64px) !important; }
+
+/* the photo fades out progressively towards the form */
+.auth-photo {
+  -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 45%, rgba(0, 0, 0, 0.55) 72%, transparent 100%);
+  mask-image: linear-gradient(90deg, #000 0%, #000 45%, rgba(0, 0, 0, 0.55) 72%, transparent 100%);
+}
+.aurora {
+  -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 55%, transparent 100%);
+  mask-image: linear-gradient(90deg, #000 0%, #000 55%, transparent 100%);
+}
+
+/* smaller logo, clean shadow */
+.auth-showcase > img {
+  height: 56px !important;
+  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.55));
+}
+.auth-mobile-logo img { height: 48px !important; }
