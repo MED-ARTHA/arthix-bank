@@ -26,9 +26,9 @@ export default function Receipt({ tx, onClose }: { tx: Transaction; onClose: () 
   const rows: { k: string; v: string; sub?: string }[] = [
     { k: "Receipt no.", v: tx.receiptNo },
     { k: "Date", v: dateTime(tx.createdAt) },
-    { k: "From", v: tx.senderName, sub: tx.senderAccount ?? undefined },
-    { k: "To", v: tx.beneficiaryName, sub: tx.beneficiaryAccount ?? undefined },
-    { k: isTransfer ? "Note" : "Reference", v: isTransfer ? tx.note ?? "-" : tx.reference },
+    { k: "From", v: tx.senderName ?? "-", sub: tx.senderAccount ?? undefined },
+    { k: "To", v: tx.beneficiaryName ?? "-", sub: tx.beneficiaryAccount ?? undefined },
+    { k: isTransfer ? "Note" : "Reference", v: isTransfer ? tx.note ?? "-" : tx.reference ?? "-" },
     { k: "Balance after", v: money(tx.balanceAfter) },
   ];
 

@@ -33,7 +33,7 @@ export default function TransactionsPage() {
     .filter((t) => !q || (t.label + " " + t.reference + " " + t.receiptNo).toLowerCase().includes(q));
 
   function exportCsv() {
-    const esc = (v: string | number) => `"${String(v).replace(/"/g, '""')}"`;
+    const esc = (v: string | number | null | undefined) => `"${String(v ?? "").replace(/"/g, '""')}"`;
     const head = ["Receipt", "Date", "Type", "Label", "Reference", "Amount", "Balance after"];
     const rows = items.map((t) =>
       [

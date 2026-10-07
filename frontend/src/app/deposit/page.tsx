@@ -125,7 +125,7 @@ export default function DepositPage() {
     setVError("");
     setVLoading(true);
     try {
-      await api.createVoucher(Number(vAmount));
+      await api.createVoucher({ amount: Number(vAmount) });
       setVAmount("");
       await loadVouchers();
     } catch (err) {
