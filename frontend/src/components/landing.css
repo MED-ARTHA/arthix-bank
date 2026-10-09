@@ -308,3 +308,18 @@ html:has(.lp)::before { opacity: 0; }
   .lp-proof .lp-wrap { grid-template-columns: 1fr; }
   .lp-proof .lp-wrap > div + div { border-left: 0; border-top: 1px solid rgba(255, 255, 255, 0.1); }
 }
+
+/* ---- v5: simple icon ---- */
+.lp-ico {
+  width: auto;
+  height: auto;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  color: #5cc9a7;
+}
+.lp-ico::after { display: none; }
+
+/* ---- v6: icon colour ---- */
+.lp-ico { color: #f58bc4; }
