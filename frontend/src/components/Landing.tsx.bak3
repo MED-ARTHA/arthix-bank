@@ -66,23 +66,14 @@ function useReveal(root: { current: HTMLElement | null }) {
     if (!els || els.length === 0) return;
     if (!("IntersectionObserver" in window)) { els.forEach((e) => e.classList.add("in")); return; }
     const io = new IntersectionObserver(
-      (entries) => entries.forEach((en) => {
-        const el = en.target as HTMLElement;
-        if (en.isIntersecting) {
-          el.classList.add("in");
-          el.classList.remove("above");
-        } else {
-          // out of view: reset it, entering later from the side the user is coming from
-          el.classList.remove("in");
-          el.classList.toggle("above", en.boundingClientRect.top < 0);
-        }
-      }),
-      { threshold: 0.12, rootMargin: "0px 0px -6% 0px" },
+      (entries) => entries.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } }),
+      { threshold: 0.15 },
     );
     els.forEach((e) => io.observe(e));
     return () => io.disconnect();
   }, [root]);
 }
+
 function Count({ to, decimals = 0, suffix = "" }: { to: number; decimals?: number; suffix?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const [v, setV] = useState(0);
@@ -271,7 +262,7 @@ export default function Landing() {
             <Photo src="/images/home/hero.png" className="lp-person"
               fallback={<div className="lp-art"><i className="a3" /><i className="a2" /><i className="a1"><span>ARTHIX</span></i></div>} />
             <div className="lp-float lp-f1" style={{ "--d": 22 } as CSSProperties}>
-              <span className="lp-ico"><Send size={15} strokeWidth={1.6} /></span>
+              <span className="lp-ico ok"><Check size={15} /></span>
               <div><b>Transfer sent</b><small>350,00 MAD to Salma</small></div>
             </div>
             <div className="lp-float lp-f2" style={{ "--d": 34 } as CSSProperties}>

@@ -251,3 +251,43 @@ html:has(.lp)::before { opacity: 0; }
   #faq .lp-head { padding-top: 28px; }
 }
 .lp-pcard, .lp-planner-card, .lp-mock { background-color: rgba(8, 8, 20, 0.55); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+
+/* ---- v3: reveal, icon, habits ---- */
+
+/* reveal: same motion in both scroll directions */
+.lp-reveal { transform: translate3d(0, 28px, 0); will-change: opacity, transform; }
+.lp-reveal.above { transform: translate3d(0, -28px, 0); }
+.lp-reveal.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .lp-reveal, .lp-reveal.above { opacity: 1; transform: none; } }
+
+/* notification icon: outlined square with a small status dot */
+.lp-ico { position: relative; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; color: #e9e6ff; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.14); }
+.lp-ico::after { content: ""; position: absolute; right: -3px; top: -3px; width: 9px; height: 9px; border-radius: 50%; background: #5cc9a7; box-shadow: 0 0 0 2px #0c0c1c; }
+
+/* habits: two photo cards and the planner, same height, same frame */
+.lp-habits { align-items: stretch; }
+.lp-pcards { grid-template-rows: 1fr 1fr; }
+.lp-pcard, .lp-planner-card { border-radius: 22px; border: 1px solid rgba(255, 255, 255, 0.1); }
+@media (min-width: 980px) {
+  .lp-pcards .lp-pcard:nth-child(2) { margin-left: 0; }
+  .lp-planner-card { margin-top: 0; }
+}
+#habits .lp-head { margin-inline: auto; text-align: center; }
+.lp-pcard { min-height: 280px; }
+.lp-pcard img { filter: saturate(0.85) contrast(1.04); }
+/* one colour tint over both photos so they match the palette */
+.lp-pcard::before {
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; mix-blend-mode: soft-light;
+  background: linear-gradient(150deg, rgba(168, 85, 247, 0.55), rgba(236, 72, 153, 0.3));
+}
+.lp-pcard::after { z-index: 1; background: linear-gradient(180deg, transparent 30%, rgba(4, 4, 14, 0.92)); }
+.lp-pcard > div { z-index: 2; text-shadow: 0 2px 14px rgba(0, 0, 0, 0.6); }
+.lp-planner-card { display: flex; flex-direction: column; }
+.lp-planner { flex: 1; align-content: space-between; }
+
+/* planner colours: same pink as the buttons */
+.lp-dot.done { color: #f58bc4; border-color: rgba(245, 139, 196, 0.45); }
+.lp-dot:hover { border-color: rgba(236, 72, 153, 0.7); }
+.lp-controls input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 4px; border-radius: 4px; outline: none; background: rgba(255, 255, 255, 0.14); }
+.lp-controls input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border-radius: 50%; cursor: pointer; background: linear-gradient(145deg, #ec4899, #b57cf5); border: 2px solid #0c0c1c; box-shadow: 0 4px 12px -2px rgba(236, 72, 153, 0.7); }
+.lp-controls input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; cursor: pointer; background: #c15fe0; border: 2px solid #0c0c1c; }
