@@ -2,6 +2,7 @@
 
 import AuthGuard from "@/components/AuthGuard";
 import Assistant from "@/components/Assistant";
+import ScrollBackdrop from "@/components/ScrollBackdrop";
 
 import Logo from "@/components/Logo";
 
@@ -161,6 +162,7 @@ export default function AppShell(props: React.ComponentProps<typeof AppShellInne
     <AuthGuard>
       <AppShellInner {...props} />
       <Assistant />
+      <ScrollBackdrop />
     </AuthGuard>
   );
 }

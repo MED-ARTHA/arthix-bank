@@ -160,3 +160,12 @@ html body .dash-main .card {
 }
 html body .dash-main .card.divide-x > * { border-color: rgba(255, 255, 255, 0.06); }
 html body .dash-main .label { letter-spacing: 0.14em; color: #6f7289; }
+
+/* ---- scroll colours only (safe) ---- */
+:root { --p: 0; }
+html::before {
+  background:
+    radial-gradient(48vmax 42vmax at 2% calc(6% + var(--p) * 70%), hsl(calc(252 + var(--p) * 70) 85% 52% / 0.34), transparent 70%),
+    radial-gradient(46vmax 42vmax at 100% calc(28% + var(--p) * 40%), hsl(calc(196 + var(--p) * 140) 80% 48% / 0.28), transparent 70%),
+    radial-gradient(40vmax 36vmax at 50% 108%, hsl(calc(300 - var(--p) * 40) 80% 50% / 0.22), transparent 70%) !important;
+}
