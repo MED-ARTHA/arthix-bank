@@ -235,7 +235,6 @@ export default function Landing() {
             <a href="#habits">Made for Morocco</a>
             <a href="#discover">Discover</a>
             <a href="#faq">FAQ</a>
-            <a href="#contact">Contact</a>
           </nav>
           <div className="lp-nav-cta">
             <Link href="/signup" className="lp-btn lp-btn-line">Open account</Link>
@@ -421,13 +420,6 @@ export default function Landing() {
       <footer className="lp-foot">
         <div className="lp-wrap">
           <Link href="/" aria-label="Arthix"><Logo height={26} /></Link>
-          <div id="contact" className="lp-contact">
-            <small>Contact</small>
-            <a href="mailto:arthixbank@gmail.com">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 7 9 6 9-6" /></svg>
-              arthixbank@gmail.com
-            </a>
-          </div>
           <p>Demo environment. No real funds are moved. &copy; 2026 Arthix.</p>
           <nav aria-label="Account"><Link href="/login">Sign in</Link><Link href="/signup">Open account</Link></nav>
         </div>

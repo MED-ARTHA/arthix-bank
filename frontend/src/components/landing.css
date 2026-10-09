@@ -323,3 +323,10 @@ html:has(.lp)::before { opacity: 0; }
 
 /* ---- v6: icon colour ---- */
 .lp-ico { color: #f58bc4; }
+
+/* ---- contact ---- */
+.lp-contact { display: grid; gap: 6px; }
+.lp-contact small { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: #6d6e86; }
+.lp-contact a { display: inline-flex; align-items: center; gap: 9px; font-size: 14px; color: #dcdcea; transition: color 0.2s; }
+.lp-contact a svg { color: #f58bc4; }
+.lp-contact a:hover { color: #fff; text-decoration: underline; text-underline-offset: 4px; }
