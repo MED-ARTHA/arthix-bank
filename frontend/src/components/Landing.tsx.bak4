@@ -3,7 +3,7 @@
 import "./landing.css";
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type PointerEvent, type ReactNode } from "react";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Check, ChevronDown, MessageCircle, Plane, Receipt, Send, Target, TrendingUp, Users, type LucideIcon } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, MessageCircle, Plane, Receipt, Send, Target, TrendingUp, Users, type LucideIcon } from "lucide-react";
 import Logo from "@/components/Logo";
 
 const fmt = (n: number) => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, "\u202f");
@@ -271,7 +271,7 @@ export default function Landing() {
             <Photo src="/images/home/hero.png" className="lp-person"
               fallback={<div className="lp-art"><i className="a3" /><i className="a2" /><i className="a1"><span>ARTHIX</span></i></div>} />
             <div className="lp-float lp-f1" style={{ "--d": 22 } as CSSProperties}>
-              <span className="lp-ico"><ArrowUpRight size={16} strokeWidth={1.8} /></span>
+              <span className="lp-ico"><Send size={15} strokeWidth={1.6} /></span>
               <div><b>Transfer sent</b><small>350,00 MAD to Salma</small></div>
             </div>
             <div className="lp-float lp-f2" style={{ "--d": 34 } as CSSProperties}>
@@ -287,18 +287,9 @@ export default function Landing() {
       {/* ---------- numbers ---------- */}
       <section className="lp-proof">
         <div className="lp-wrap">
-          <div className="lp-stat lp-reveal">
-            <p className="lp-num serif"><Count to={10} /></p>
-            <p className="lp-cap">Simulated instruments</p>
-          </div>
-          <div className="lp-stat lp-reveal" style={stagger(1)}>
-            <p className="lp-num serif"><Count to={0.2} decimals={1} /><em>%</em></p>
-            <p className="lp-cap">Fee per trade</p>
-          </div>
-          <div className="lp-stat lp-reveal" style={stagger(2)}>
-            <p className="lp-num serif"><Count to={50} /><em>MAD</em></p>
-            <p className="lp-cap">Minimum to start</p>
-          </div>
+          <div className="lp-reveal"><b className="serif"><Count to={10} /></b><span>simulated instruments to explore</span></div>
+          <div className="lp-reveal" style={stagger(1)}><b className="serif"><Count to={0.2} decimals={1} suffix=" %" /></b><span>fee per trade</span></div>
+          <div className="lp-reveal" style={stagger(2)}><b className="serif"><Count to={50} /> MAD</b><span>is all it takes to start</span></div>
         </div>
       </section>
 

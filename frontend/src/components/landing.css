@@ -291,3 +291,20 @@ html:has(.lp)::before { opacity: 0; }
 .lp-controls input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 4px; border-radius: 4px; outline: none; background: rgba(255, 255, 255, 0.14); }
 .lp-controls input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border-radius: 50%; cursor: pointer; background: linear-gradient(145deg, #ec4899, #b57cf5); border: 2px solid #0c0c1c; box-shadow: 0 4px 12px -2px rgba(236, 72, 153, 0.7); }
 .lp-controls input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; cursor: pointer; background: #c15fe0; border: 2px solid #0c0c1c; }
+
+/* ---- v4: stats + icon ---- */
+.lp-ico { width: 38px; height: 38px; border-radius: 12px; color: #f58bc4; background: linear-gradient(145deg, rgba(236, 72, 153, 0.18), rgba(181, 124, 245, 0.1)); border: 1px solid rgba(236, 72, 153, 0.35); }
+.lp-ico::after { display: none; }
+
+.lp-proof { padding: clamp(8px, 2vw, 24px) 0; }
+.lp-proof .lp-wrap { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; }
+.lp-proof .lp-wrap > div { display: block; padding: 28px clamp(12px, 3vw, 44px); text-align: left; }
+.lp-proof .lp-wrap > div + div { border-left: 1px solid rgba(255, 255, 255, 0.1); }
+.lp-num { display: flex; align-items: baseline; gap: 8px; font-size: clamp(38px, 5vw, 66px); font-weight: 400; line-height: 1; letter-spacing: -0.02em; color: #fff; }
+.lp-num span { font-size: inherit; color: inherit; font-variant-numeric: tabular-nums; }
+.lp-num em { font-style: normal; font-size: 0.34em; letter-spacing: 0.14em; color: #f58bc4; }
+.lp-cap { margin-top: 14px; font-size: 11.5px; letter-spacing: 0.16em; text-transform: uppercase; color: #8b8ca3; }
+@media (max-width: 640px) {
+  .lp-proof .lp-wrap { grid-template-columns: 1fr; }
+  .lp-proof .lp-wrap > div + div { border-left: 0; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+}
