@@ -1,0 +1,411 @@
+"use client";
+
+import "./landing.css";
+import { useCallback, useEffect, useRef, useState, type CSSProperties, type PointerEvent, type ReactNode } from "react";
+import Link from "next/link";
+import { ArrowRight, Check, ChevronDown, MessageCircle, Plane, Receipt, Send, Target, TrendingUp, Users, type LucideIcon } from "lucide-react";
+import Logo from "@/components/Logo";
+
+const fmt = (n: number) => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, "\u202f");
+const stagger = (i: number) => ({ "--i": i }) as CSSProperties;
+
+type Mock = { head: string; rows: [string, string][]; foot: string; progress?: number };
+type Feature = { id: string; label: string; icon: LucideIcon; title: string; text: string; points: string[]; mock: Mock };
+
+const FEATURES: Feature[] = [
+  {
+    id: "transfers", label: "Transfers", icon: Send,
+    title: "Send money in seconds",
+    text: "Enter an account number and an amount. It arrives instantly. Or set it to repeat, so rent and family support never depend on remembering.",
+    points: ["Instant, between Arthix accounts", "One time, weekly or monthly", "A receipt for every transfer"],
+    mock: { head: "New transfer", rows: [["To", "Salma B. \u00b7 ARX\u20264821"], ["Amount", "350,00 MAD"], ["When", "Today, instantly"]], foot: "Delivered" },
+  },
+  {
+    id: "payments", label: "Payments", icon: Receipt,
+    title: "Bills, without the queue",
+    text: "Telecom, utilities, schools, insurance, taxes and transport in one list, with a printable receipt each time.",
+    points: ["Six categories, one place", "Printable receipts", "Everything lands in your history"],
+    mock: { head: "Pay a bill", rows: [["Biller", "Telecom"], ["Reference", "0612 34 56 78"], ["Amount", "99,00 MAD"]], foot: "Receipt ready" },
+  },
+  {
+    id: "goals", label: "Savings goals", icon: Target,
+    title: "Set money aside for something",
+    text: "Name a goal, pick a target, and move money in whenever you can. The progress bar keeps you honest.",
+    points: ["As many goals as you need", "Move money in or out", "See progress at a glance"],
+    mock: { head: "Savings goal", rows: [["Goal", "Eid al-Adha"], ["Saved", "3 100 MAD"], ["Target", "5 000 MAD"]], foot: "62 % there", progress: 62 },
+  },
+  {
+    id: "invest", label: "Invest", icon: TrendingUp,
+    title: "Learn investing without the risk",
+    text: "A simulated market with ten instruments and news that moves prices. Answer four questions and get a portfolio that matches your profile.",
+    points: ["Start from 50 MAD", "0.2 % fee per trade", "Prudent, Balanced or Dynamic"],
+    mock: { head: "Smart portfolio", rows: [["Profile", "Balanced"], ["Instruments", "6"], ["Fee", "0,2 %"]], foot: "Simulated market" },
+  },
+  {
+    id: "messages", label: "Messages", icon: MessageCircle,
+    title: "Talk where the money moves",
+    text: "Chat with other Arthix members in real time, with photos and videos, and say what a transfer is for.",
+    points: ["Real time", "Photos and videos", "Typing and read receipts"],
+    mock: { head: "Messages", rows: [["Salma", "Did it arrive?"], ["You", "Yes, thank you!"], ["Salma", "Photo"]], foot: "Live" },
+  },
+];
+
+const FAQS: [string, string][] = [
+  ["Is this real money?", "No. Arthix is a demo: balances, prices and the market are simulated, and no real funds are ever moved."],
+  ["How do I get an account?", "Open an account with your name, email and a password, and you can start using every feature right away."],
+  ["What does investing cost?", "Buying and selling in the simulated market starts from 50 MAD, with a 0.2 % fee per trade."],
+  ["Which currency is used?", "The Moroccan dirham, everywhere. Exchange simulators are in Offers & tools."],
+  ["Is it safe to type my real password?", "It is a demo, so please use a password you do not use anywhere else."],
+];
+
+/* ---------- small building blocks ---------- */
+
+function useReveal(root: { current: HTMLElement | null }) {
+  useEffect(() => {
+    const els = root.current?.querySelectorAll<HTMLElement>(".lp-reveal");
+    if (!els || els.length === 0) return;
+    if (!("IntersectionObserver" in window)) { els.forEach((e) => e.classList.add("in")); return; }
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } }),
+      { threshold: 0.15 },
+    );
+    els.forEach((e) => io.observe(e));
+    return () => io.disconnect();
+  }, [root]);
+}
+
+function Count({ to, decimals = 0, suffix = "" }: { to: number; decimals?: number; suffix?: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [v, setV] = useState(0);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      io.disconnect();
+      if (calm) { setV(to); return; }
+      const t0 = performance.now();
+      const tick = (t: number) => {
+        const p = Math.min(1, (t - t0) / 1200);
+        setV(to * (1 - Math.pow(1 - p, 3)));
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [to]);
+  return <span ref={ref}>{v.toFixed(decimals)}{suffix}</span>;
+}
+
+/** Shows a photo from public/images/home. If the file is missing, the fallback is rendered instead. */
+function Photo({ src, className, fallback, children }: { src: string; className?: string; fallback: ReactNode; children?: ReactNode }) {
+  const [ok, setOk] = useState(true);
+  return (
+    <div className={className}>
+      {ok ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={src} alt="" draggable={false} onError={() => setOk(false)} />
+      ) : fallback}
+      {children}
+    </div>
+  );
+}
+
+function Planner() {
+  const [people, setPeople] = useState(8);
+  const [amount, setAmount] = useState(500);
+  const [turn, setTurn] = useState(3);
+  const t = Math.min(turn, people);
+  const pot = people * amount;
+  return (
+    <div className="lp-planner">
+      <div className="lp-ring" role="group" aria-label="Pick your turn">
+        {Array.from({ length: people }, (_, i) => {
+          const a = (i / people) * Math.PI * 2 - Math.PI / 2;
+          const cls = "lp-dot" + (i + 1 === t ? " me" : i + 1 < t ? " done" : "");
+          return (
+            <button key={i} type="button" className={cls} aria-pressed={i + 1 === t} aria-label={`Month ${i + 1}`}
+              style={{ left: `${(50 + 42 * Math.cos(a)).toFixed(2)}%`, top: `${(50 + 42 * Math.sin(a)).toFixed(2)}%` }}
+              onClick={() => setTurn(i + 1)}>
+              {i + 1}
+            </button>
+          );
+        })}
+        <div className="lp-ring-mid"><small>The pot</small><b className="serif">{fmt(pot)}</b><small>MAD</small></div>
+      </div>
+
+      <div className="lp-controls">
+        <label>
+          <span>People in the circle <b>{people}</b></span>
+          <input type="range" min={3} max={20} value={people} onChange={(e) => setPeople(Number(e.target.value))} />
+        </label>
+        <label>
+          <span>Each person puts in <b>{fmt(amount)} MAD</b> a month</span>
+          <input type="range" min={100} max={3000} step={50} value={amount} onChange={(e) => setAmount(Number(e.target.value))} />
+        </label>
+      </div>
+
+      <p className="lp-result">
+        You receive <b>{fmt(pot)} MAD</b> in month <b>{t}</b>. Tap a number to change your turn. In a savings goal on Arthix you can set your monthly share aside.
+      </p>
+    </div>
+  );
+}
+
+function NoteStack() {
+  const ref = useRef<HTMLDivElement>(null);
+  const move = (e: PointerEvent<HTMLDivElement>) => {
+    const el = ref.current;
+    if (!el || e.pointerType === "touch") return;
+    const r = el.getBoundingClientRect();
+    el.style.setProperty("--mx", (((e.clientX - r.left) / r.width) * 2 - 1).toFixed(3));
+    el.style.setProperty("--my", (((e.clientY - r.top) / r.height) * 2 - 1).toFixed(3));
+  };
+  const leave = () => { ref.current?.style.setProperty("--mx", "0"); ref.current?.style.setProperty("--my", "0"); };
+  const notes = [
+    { v: 50, x: -84, y: -50, r: -9, z: 0 },
+    { v: 100, x: -4, y: 6, r: 3, z: 60 },
+    { v: 200, x: 76, y: 60, r: 10, z: 120 },
+  ];
+  return (
+    <div ref={ref} className="lp-notes" onPointerMove={move} onPointerLeave={leave}>
+      {notes.map((n) => (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img key={n.v} className="lp-note" src={`/images/money/${n.v}dh.jpg`} alt={`${n.v} dirham banknote`} draggable={false}
+          style={{ "--x": n.x, "--y": n.y, "--r": n.r, "--z": n.z } as CSSProperties} />
+      ))}
+    </div>
+  );
+}
+
+/* ---------- page ---------- */
+
+export default function Landing() {
+  const root = useRef<HTMLElement>(null);
+  const hero = useRef<HTMLElement>(null);
+  const [authed, setAuthed] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [tab, setTab] = useState(FEATURES[0].id);
+  const [faq, setFaq] = useState<number | null>(0);
+
+  useReveal(root);
+
+  useEffect(() => {
+    setAuthed(!!localStorage.getItem("token"));
+    const onScroll = () => { setScrolled(window.scrollY > 12); const max = document.documentElement.scrollHeight - window.innerHeight; root.current?.style.setProperty("--p", (max > 0 ? Math.min(1, window.scrollY / max) : 0).toFixed(3)); };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const track = useCallback((e: PointerEvent<HTMLElement>) => {
+    const el = hero.current;
+    if (!el || e.pointerType === "touch") return;
+    const r = el.getBoundingClientRect();
+    el.style.setProperty("--mx", (((e.clientX - r.left) / r.width) * 2 - 1).toFixed(3));
+    el.style.setProperty("--my", (((e.clientY - r.top) / r.height) * 2 - 1).toFixed(3));
+  }, []);
+  const untrack = useCallback(() => {
+    hero.current?.style.setProperty("--mx", "0");
+    hero.current?.style.setProperty("--my", "0");
+  }, []);
+
+  const feature = FEATURES.find((f) => f.id === tab) ?? FEATURES[0];
+  const primary = { href: "/login", label: "Sign in" };
+
+  return (
+    <main ref={root} className="lp">
+      <div className="lp-bg" aria-hidden="true" />
+      <header className={"lp-nav" + (scrolled ? " scrolled" : "")}>
+        <div className="lp-wrap">
+          <Link href="/" className="lp-brand" aria-label="Arthix"><Logo height={32} /></Link>
+          <nav className="lp-links" aria-label="Sections">
+            <a href="#features">Features</a>
+            <a href="#habits">Made for Morocco</a>
+            <a href="#discover">Discover</a>
+            <a href="#faq">FAQ</a>
+          </nav>
+          <div className="lp-nav-cta">
+            <Link href="/signup" className="lp-btn lp-btn-line">Open account</Link>
+            <Link href={primary.href} className="lp-btn lp-btn-solid">Sign in</Link>
+          </div>
+        </div>
+      </header>
+
+      {/* ---------- hero ---------- */}
+      <section ref={hero} className="lp-hero" onPointerMove={track} onPointerLeave={untrack}>
+        <div className="lp-wrap">
+          <div className="lp-copy">
+            <p className="lp-eyebrow lp-reveal">Digital banking, in dirhams</p>
+            <h1 className="lp-h1 serif lp-reveal" style={stagger(1)}>
+              A <em>calmer</em> way to look after your money.
+            </h1>
+            <p className="lp-lead lp-reveal" style={stagger(2)}>
+              Send, pay, save and invest from one place. Built around how money really moves here: transfers to family,
+              daret circles, bills at the end of the month.
+            </p>
+            <div className="lp-cta lp-reveal" style={stagger(3)}>
+              <Link href={primary.href} className="lp-btn lp-btn-solid lp-btn-lg">{primary.label} <ArrowRight size={16} /></Link>
+              <a href="#features" className="lp-btn lp-btn-line lp-btn-lg">See how it works</a>
+            </div>
+            <p className="lp-assure lp-reveal" style={stagger(4)}>
+              <span><Check size={14} /> Instant transfers</span>
+              <span><Check size={14} /> Real-time messages</span>
+              <span><Check size={14} /> Demo, no real funds</span>
+            </p>
+          </div>
+
+          <div className="lp-stage lp-reveal" style={stagger(2)} aria-hidden="true">
+            <div className="lp-glow" />
+            <Photo src="/images/home/hero.png" className="lp-person"
+              fallback={<div className="lp-art"><i className="a3" /><i className="a2" /><i className="a1"><span>ARTHIX</span></i></div>} />
+            <div className="lp-float lp-f1" style={{ "--d": 22 } as CSSProperties}>
+              <span className="lp-ico ok"><Check size={15} /></span>
+              <div><b>Transfer sent</b><small>350,00 MAD to Salma</small></div>
+            </div>
+            <div className="lp-float lp-f2" style={{ "--d": 34 } as CSSProperties}>
+              <div><small>Available</small><b className="serif">12 480,00 MAD</b></div>
+            </div>
+            <div className="lp-float lp-f3" style={{ "--d": 16 } as CSSProperties}>
+              <div className="lp-goal"><small>Eid goal</small><i><u style={{ width: "62%" }} /></i></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- numbers ---------- */}
+      <section className="lp-proof">
+        <div className="lp-wrap">
+          <div className="lp-reveal"><b className="serif"><Count to={10} /></b><span>simulated instruments to explore</span></div>
+          <div className="lp-reveal" style={stagger(1)}><b className="serif"><Count to={0.2} decimals={1} suffix=" %" /></b><span>fee per trade</span></div>
+          <div className="lp-reveal" style={stagger(2)}><b className="serif"><Count to={50} /> MAD</b><span>is all it takes to start</span></div>
+        </div>
+      </section>
+
+      {/* ---------- features ---------- */}
+      <section id="features" className="lp-sec">
+        <div className="lp-wrap">
+          <header className="lp-head lp-reveal">
+            <p className="lp-kicker">What you can do</p>
+            <h2 className="serif lp-h2">Everything in one place, nothing you do not need.</h2>
+          </header>
+
+          <div className="lp-feat">
+            <div className="lp-feat-copy">
+              <div className="lp-tabs lp-reveal" role="tablist" aria-label="Features">
+                {FEATURES.map((f) => (
+                  <button key={f.id} role="tab" aria-selected={tab === f.id} className={tab === f.id ? "on" : ""} onClick={() => setTab(f.id)}>
+                    <f.icon size={15} strokeWidth={1.6} /> {f.label}
+                  </button>
+                ))}
+              </div>
+              <div key={feature.id} className="lp-feat-text">
+                <h3 className="serif">{feature.title}</h3>
+                <p>{feature.text}</p>
+                <ul>{feature.points.map((p) => <li key={p}><Check size={15} /> {p}</li>)}</ul>
+              </div>
+            </div>
+
+            <div key={feature.id + "m"} className="lp-mock" aria-hidden="true">
+              <header><span /><span /><span /><b>{feature.mock.head}</b></header>
+              <ul>
+                {feature.mock.rows.map(([k, v]) => <li key={k + v}><small>{k}</small><span>{v}</span></li>)}
+              </ul>
+              {feature.mock.progress !== undefined && <div className="lp-bar"><u style={{ width: `${feature.mock.progress}%` }} /></div>}
+              <footer><i /> {feature.mock.foot}</footer>
+              <p>Illustrative example</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- habits ---------- */}
+      <section id="habits" className="lp-sec lp-sec-alt">
+        <div className="lp-wrap">
+          <header className="lp-head lp-reveal">
+            <p className="lp-kicker">Made for Morocco</p>
+            <h2 className="serif lp-h2">Money has always been a shared thing here.</h2>
+          </header>
+
+          <div className="lp-habits">
+            <div className="lp-pcards">
+              <Photo src="/images/home/daret.jpg" className="lp-pcard lp-reveal"
+                fallback={<span className="lp-pfall"><Users size={34} strokeWidth={1.2} /></span>}>
+                <div><b className="serif">Daret circles</b><p>Friends and family saving together, one turn at a time.</p></div>
+              </Photo>
+              <Photo src="/images/home/mre.jpg" className="lp-pcard lp-reveal"
+                fallback={<span className="lp-pfall"><Plane size={34} strokeWidth={1.2} /></span>}>
+                <div><b className="serif">Sending money home</b><p>Moroccans abroad supporting the families they left behind.</p></div>
+              </Photo>
+            </div>
+
+            <div className="lp-planner-card lp-reveal" style={stagger(1)}>
+              <h3 className="serif">Plan your daret</h3>
+              <p>Try the numbers before you start a circle.</p>
+              <Planner />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- discover ---------- */}
+      <section id="discover" className="lp-sec">
+        <div className="lp-wrap lp-disc">
+          <div className="lp-reveal">
+            <p className="lp-kicker">Discover</p>
+            <h2 className="serif lp-h2">The dirham, up close.</h2>
+            <p className="lp-sub">
+              Turn the banknotes and coins in 3D, meet the banks you see every day, and read a few habits that shape
+              how Moroccans save, send and spend.
+            </p>
+            <Link href="/login" className="lp-btn lp-btn-line lp-btn-lg">
+              Sign in to explore <ArrowRight size={16} />
+            </Link>
+          </div>
+          <div className="lp-reveal" style={stagger(1)}><NoteStack /></div>
+        </div>
+      </section>
+
+      {/* ---------- faq ---------- */}
+      <section id="faq" className="lp-sec lp-sec-alt">
+        <div className="lp-wrap lp-faqwrap">
+          <header className="lp-head lp-reveal">
+            <p className="lp-kicker">Questions</p>
+            <h2 className="serif lp-h2">Before you start.</h2>
+          </header>
+          <div className="lp-faq">
+            {FAQS.map(([q, a], i) => (
+              <div key={q} className={"lp-qa lp-reveal" + (faq === i ? " open" : "")} style={stagger(i)}>
+                <button aria-expanded={faq === i} onClick={() => setFaq(faq === i ? null : i)}>
+                  {q}<ChevronDown size={18} />
+                </button>
+                <div className="lp-a"><p>{a}</p></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- closing ---------- */}
+      <section className="lp-sec">
+        <div className="lp-wrap">
+          <div className="lp-final lp-reveal">
+            <h2 className="serif lp-h2">Ready when you are.</h2>
+            <p className="lp-sub">Open an account in a minute and try everything with demo money.</p>
+            <Link href={primary.href} className="lp-btn lp-btn-solid lp-btn-lg">{primary.label} <ArrowRight size={16} /></Link>
+          </div>
+        </div>
+      </section>
+
+      <footer className="lp-foot">
+        <div className="lp-wrap">
+          <Link href="/" aria-label="Arthix"><Logo height={26} /></Link>
+          <p>Demo environment. No real funds are moved. &copy; 2026 Arthix.</p>
+          <nav aria-label="Account"><Link href="/login">Sign in</Link><Link href="/signup">Open account</Link></nav>
+        </div>
+      </footer>
+    </main>
+  );
+}
